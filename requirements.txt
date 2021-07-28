@@ -1,0 +1,4 @@
+supervisely==6.1.92
+open3d==0.13.0
+tensorflow==2.5.0
+waymo-open-dataset-tf-2-5-0==1.4.0
