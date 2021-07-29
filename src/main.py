@@ -23,7 +23,7 @@ def kitty_downloader(link, save_path, file_name, app_logger):
     shutil.unpack_archive(save_path, g.storage_dir, format="tar")
 
 
-@g.my_app.callback("import_kitty")
+@g.my_app.callback("import_kitti")
 @sly.timeit
 def import_kitty(api: sly.Api, task_id, context, state, app_logger):
     if state["mode"] == "public":
@@ -53,9 +53,12 @@ def import_kitty(api: sly.Api, task_id, context, state, app_logger):
             app_logger.info(f'"{os.path.basename(os.path.normpath(remote_dir))}" has been successfully downloaded')
         shutil.unpack_archive(local_archive, g.storage_dir)
 
+    sly_project_name = state["resultingProjectName"]
+    sly_ds_name = 'kitti_dataset'
+    sly_proj_dir = os.path.join(g.sly_base_dir, sly_project_name)
 
-    convert_kitty3d_to_sly.start(g.sm_train_dir, g.sly_proj_dir, 'kitty_dataset')
-    upload_pointcloud_project.upload_sly_pcd(g.sly_proj_dir, state["workspaceId"], g.sly_project_name)
+    convert_kitty3d_to_sly.start(g.train_dir, sly_proj_dir, sly_ds_name)
+    upload_pointcloud_project.upload_sly_pcd(sly_proj_dir, state["workspaceId"], sly_project_name)
 
     g.my_app.stop()
 

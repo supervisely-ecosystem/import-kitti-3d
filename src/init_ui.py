@@ -7,4 +7,4 @@ def init(data, state):
     state["size"] = "medium"
     state["customDataPath"] = None
 
-    state["resultingProjectName"] = "my_KITTY"
+    state["resultingProjectName"] = "KITTI Project"

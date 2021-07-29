@@ -31,10 +31,10 @@
             <el-tab-pane label="public" name="public">
                 <el-radio v-model="state.mode" slot="label" label="public">
                     Public Data
-                    <div>Import public KITTY dataset</div>
+                    <div>Import public KITTI dataset</div>
                 </el-radio>
                 <sly-field title="Select size of the dataset"
-                           description="Small size contain 20 KITTY. Medium sized KITTY 800. Big sized KITTY 1600.">
+                           description="Small size contain 20 KITTI. Medium sized KITTI 800. Big sized KITTI 1600.">
                     <div class="mt5">
                         <el-radio v-model="state.size" slot="label" label="small"></el-radio>
                     </div>
@@ -77,7 +77,7 @@
                         :disabled="!state.resultingProjectName || data.finished"
                         type="primary"
                         :loading="data.started"
-                        @click="data.started = true; command('import_pascal_voc')"
+                        @click="data.started = true; command('import_kitti')"
                 >
                     <i class="zmdi zmdi-play" style="margin-right: 5px"></i> Run
                 </el-button>
