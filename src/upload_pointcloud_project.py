@@ -1,4 +1,3 @@
-import os
 import globals as g
 import supervisely_lib as sly
 from supervisely_lib.api.module_api import ApiField
