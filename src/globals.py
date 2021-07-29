@@ -10,33 +10,29 @@ team_id = int(os.environ['context.teamId'])
 workspace_id = int(os.environ['context.workspaceId'])
 
 
-storage_dir = os.path.join(my_app.data_dir, "kitty_importer")
+storage_dir = os.path.join(my_app.data_dir, "kitti_importer")
 train_dir = os.path.join(storage_dir, "training")
+test_dir = os.path.join(storage_dir, "testing")
 sly.fs.mkdir(storage_dir, remove_content_if_exists=True)
 
 sly_base_dir = os.path.join(storage_dir, "supervisely")
 sly.fs.mkdir(sly_base_dir, remove_content_if_exists=True)
 
-# sly_project_name = "Kitti Project"
-# sly_proj_dir = os.path.join(sly_base_dir, sly_project_name)
+### LINKS
+train_100 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/100_training.zip"
+test_100 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/100_testing.zip"
 
-kitty_small_dl_link = "https://drive.google.com/file/d/1Nm9elpMAQ6PJlueF9-vZdsS8-AS1I5Ep/view?usp=sharing"  # 20
-kitty_med_dl_link = "https://drive.google.com/file/d/1QkS9V_YoCNC_O-wbn3OOSuPCQ1CYYP3X/view?usp=sharing"    # 800
-kitty_big_dl_link = "https://drive.google.com/file/d/1LxHnk3PdSRxRkd2OjeUmP5d_S0xfEyBW/view?usp=sharing"    # 1600
+train_200 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/200_training.zip"
+test_200 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/200_testing.zip"
 
+train_300 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/300_training.zip"
+test_300 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/300_testing.zip"
 
-# path_to_kitty_ds = "/home/paul/Documents/Work/Applications/KITTY_data/unpacked"
-#
-# train_dir = os.path.join(path_to_kitty_ds, "training")
-# test_dir = os.path.join(path_to_kitty_ds, "testing")
-#
-# sm_kitty_path = "/home/paul/Documents/Work/Applications/SMALL_KITTY_data"
-# sm_train_dir = os.path.join(sm_kitty_path, "training")
-#
-# med_kitty_path = "/home/paul/Documents/Work/Applications/MEDIUM_KITTY_data"
-# med_train_dir = os.path.join(med_kitty_path, "training")
+train_400 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/400_training.zip"
+test_400 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/400_testing.zip"
 
+train_500 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/500_training.zip"
+test_500 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/500_testing.zip"
 
-# sly_base_dir = "/home/paul/Documents/Work/Applications/SLY_data"
-# sly_project_name = "Kitty Project"
-# sly_proj_dir = os.path.join(sly_base_dir, sly_project_name)
+#kitty_small_dl_link = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.1/SMALL_KITTI_data.zip"  # 20
+#kitty_med_dl_link = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.1/MEDIUM_KITTI_data.zip"    # 800

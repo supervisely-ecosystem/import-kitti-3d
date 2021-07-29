@@ -33,19 +33,38 @@
                     Public Data
                     <div>Import public KITTI dataset</div>
                 </el-radio>
-                <sly-field title="Select size of the dataset"
-                           description="Small size contain 20 KITTI. Medium sized KITTI 800. Big sized KITTI 1600.">
+                <sly-field title="Training Dataset" description="Training data">
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="small"></el-radio>
+                        <el-radio v-model="state.size" slot="label" label="train_100">100 Scenes</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="medium"></el-radio>
+                        <el-radio v-model="state.size" slot="label" label="train_200">200 Scenes</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="big"></el-radio>
+                        <el-radio v-model="state.size" slot="label" label="train_300">300 Scenes</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="full"></el-radio>
+                        <el-radio v-model="state.size" slot="label" label="train_400">400 Scenes</el-radio>
+                    </div>
+                    <div class="mt5">
+                        <el-radio v-model="state.size" slot="label" label="train_500">500 Scenes</el-radio>
+                    </div>
+                </sly-field>
+                <sly-field title="Testing Dataset" description="Testing data">
+                    <div class="mt5">
+                        <el-radio v-model="state.size" slot="label" label="test_100">100 Scenes</el-radio>
+                    </div>
+                    <div class="mt5">
+                        <el-radio v-model="state.size" slot="label" label="test_200">200 Scenes</el-radio>
+                    </div>
+                    <div class="mt5">
+                        <el-radio v-model="state.size" slot="label" label="test_300">300 Scenes</el-radio>
+                    </div>
+                    <div class="mt5">
+                        <el-radio v-model="state.size" slot="label" label="test_400">400 Scenes</el-radio>
+                    </div>
+                    <div class="mt5">
+                        <el-radio v-model="state.size" slot="label" label="test_500">500 Scenes</el-radio>
                     </div>
                 </sly-field>
 
@@ -53,10 +72,10 @@
             <el-tab-pane label="custom" name="custom">
                 <el-radio v-model="state.mode" slot="label" label="custom">
                     Custom Data
-                    <div>Import custom Pascal VOC 2012 dataset</div>
+                    <div>Import custom KITTI dataset</div>
                 </el-radio>
                 <sly-field title="Path to Custom Data"
-                           description="Copy path to your Pascal custom data from Team Files and paste it to input field.">
+                           description="Copy path to your KITTI custom data from Team Files and paste it to input field.">
                     <el-input v-model="state.customDataPath" :disabled="data.started"
                               placeholder="Path to custom data in Team Files"></el-input>
                 </sly-field>
@@ -71,6 +90,10 @@
             <sly-field title="Project Name"
                        description="If project name already exists in selected workspace, a number will be added to the end of the name. e.g. my_project -> my_project_001">
                 <el-input v-model="state.resultingProjectName" placeholder="my_Project"></el-input>
+            </sly-field>
+            <sly-field title="Dataset Name"
+                       description="If dataset name already exists in selected project, a number will be added to the end of the name. e.g. my_dataset -> my_dataset_001">
+                <el-input v-model="state.resultingDatasetName" placeholder="my_Dataset"></el-input>
             </sly-field>
             <div class="fflex mt10">
                 <el-button

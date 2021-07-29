@@ -5,6 +5,7 @@ from supervisely_lib.api.module_api import ApiField
 from supervisely_lib.io.json import load_json_file
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 
+import init_ui_progress
 
 def upload_sly_pcd(project_dir, workspace_id, project_name):
     project = g.api.project.create(workspace_id,
@@ -23,6 +24,7 @@ def upload_sly_pcd(project_dir, workspace_id, project_name):
         dataset = g.api.dataset.create(project.id, dataset_fs.name, change_name_if_conflict=True)
         sly.logger.info("dataset {!r} [id={!r}] has been created".format(dataset.name, dataset.id))
 
+        progress_items_cb = init_ui_progress.get_progress_cb(g.api, g.task_id, f'Uploading dataset: {dataset.name}', len(dataset_fs))
         for item_name in dataset_fs:
             item_path, related_images_dir, ann_path = dataset_fs.get_item_paths(item_name)
 
@@ -49,5 +51,14 @@ def upload_sly_pcd(project_dir, workspace_id, project_name):
                                        ApiField.META: meta_json[ApiField.META]})
 
                 g.api.pointcloud.add_related_images(rimg_infos)
+            progress_items_cb(1)
 
+    fields = [
+        {"field": "data.started", "payload": False},
+        {"field": "data.finished", "payload": True},
+        {"field": "data.resultProject", "payload": project.name},
+        {"field": "data.resultProjectId", "payload": project.id},
+        {"field": "data.resultProjectPreviewUrl", "payload": g.api.image.preview_url("https://i.imgur.com/qmuNM6J.png", 100, 100)}
+    ]
+    g.api.task.set_fields(g.task_id, fields)
     sly.logger.info('PROJECT_UPLOADED', extra={'event_type': sly.EventType.PROJECT_CREATED, 'project_id': project.id})

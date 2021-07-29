@@ -1,6 +1,9 @@
 import glob
 import os
 
+import globals as g
+import init_ui_progress
+
 import numpy as np
 import open3d as o3d
 
@@ -132,6 +135,7 @@ def start(kitti_dataset_path, sly_project_path, sly_dataset_name):
     meta = convert_labels_to_meta(kitti_labels)
     project_fs.set_meta(meta)
 
+    progress_items_cb = init_ui_progress.get_progress_cb(g.api, g.task_id, f'Converting KITTI data', len(bin_paths))
     for bin_path, kitti_label, image_path, calib_path in zip(bin_paths, kitti_labels, image_paths, calib_paths):
         item_name = sly.fs.get_file_name(bin_path) + ".pcd"
         item_path = dataset_fs.generate_item_path(item_name)
@@ -149,6 +153,7 @@ def start(kitti_dataset_path, sly_project_path, sly_dataset_name):
 
         img_info = convert_calib_to_image_meta(image_name, calib_path)
         sly.json.dump_json_file(img_info, sly_path_img + '.json')
-        sly.logger.info(f".bin -> {item_name}")
+        #sly.logger.info(f".bin -> {item_name}")
+        progress_items_cb(1)
 
     sly.logger.info(f"Job done, dataset converted. Project_path: {sly_project_path}")
