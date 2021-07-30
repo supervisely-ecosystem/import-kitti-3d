@@ -11,9 +11,13 @@ workspace_id = int(os.environ['context.workspaceId'])
 
 
 storage_dir = os.path.join(my_app.data_dir, "kitti_importer")
-train_dir = os.path.join(storage_dir, "training")
-test_dir = os.path.join(storage_dir, "testing")
+kitti_base_dir = os.path.join(storage_dir, "kitti_base_dir")
+train_dir = os.path.join(kitti_base_dir, "training")
+test_dir = os.path.join(kitti_base_dir, "testing")
+
 sly.fs.mkdir(storage_dir, remove_content_if_exists=True)
+sly.fs.mkdir(kitti_base_dir, remove_content_if_exists=True)
+
 
 sly_base_dir = os.path.join(storage_dir, "supervisely")
 sly.fs.mkdir(sly_base_dir, remove_content_if_exists=True)

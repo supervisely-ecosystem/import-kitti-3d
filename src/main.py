@@ -16,10 +16,15 @@ def import_kitty(api: sly.Api, task_id, context, state, app_logger):
     kitti_downloader.start(state, app_logger)
 
     sly_project_name = state["resultingProjectName"]
-    sly_ds_name = state["resultingDatasetName"]
+    if state["mode"] == "public":
+        sly_train_ds_name = state["resultingTrainDatasetName"]
+        sly_test_ds_name = state["resultingTestDatasetName"]
+    else:
+        sly_train_ds_name = "training"
+        sly_test_ds_name = "testing"
     sly_proj_dir = os.path.join(g.sly_base_dir, sly_project_name)
 
-    convert_kitti3d_to_sly.start(g.train_dir, sly_proj_dir, sly_ds_name)
+    convert_kitti3d_to_sly.start(g.kitti_base_dir, sly_proj_dir, sly_train_ds_name, sly_test_ds_name)
     upload_pointcloud_project.upload_sly_pcd(sly_proj_dir, state["workspaceId"], sly_project_name)
 
     g.my_app.show_modal_window(f"'{state['resultingProjectName']}' project has been successfully imported.")

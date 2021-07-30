@@ -20,20 +20,31 @@ def get_kitti_files_list(kitti_dataset_path):
     bin_paths = sorted(glob.glob(binfiles_glob))
     if len(bin_paths) < 1:
         sly.logger.error(f"No pointclouds found! Check path: {binfiles_glob}")
-    label_paths = [x.replace('velodyne', 'label_2').replace('.bin', '.txt') for x in bin_paths]
+
     image_paths = [x.replace('velodyne', 'image_2').replace('.bin', '.png') for x in bin_paths]
-    calib_paths = [x.replace('label_2', 'calib') for x in label_paths]
+    calib_paths = [x.replace('velodyne', 'calib').replace('.bin', '.txt') for x in bin_paths]
+
+    if os.path.exists(os.path.join(kitti_dataset_path, "label_2")):
+        label_paths = [x.replace('velodyne', 'label_2').replace('.bin', '.txt') for x in bin_paths]
+    else:
+        label_paths = []
+        for x in bin_paths:
+            label_paths.append(None)
+
     return bin_paths, label_paths, image_paths, calib_paths
 
 
-def read_kitti_annotations(label_paths, calib_paths):
+def read_kitti_annotations(label_paths, calib_paths, ds_name):
     all_labels = []
     all_calib = []
     for label_file, calib_file in zip(label_paths, calib_paths):
         calib = o3d.ml.datasets.KITTI.read_calib(calib_file)
-        labels = o3d.ml.datasets.KITTI.read_label(label_file, calib)
-        all_labels.append(labels)
+        if ds_name == "training":
+            labels = o3d.ml.datasets.KITTI.read_label(label_file, calib)
+            all_labels.append(labels)
         all_calib.append(calib)
+        if ds_name == "testing":
+            all_labels.append(None)
     return all_labels, all_calib
 
 
@@ -119,41 +130,56 @@ def convert_calib_to_image_meta(image_name, calib_path, camera_num=2):
     return data
 
 
-def start(kitti_dataset_path, sly_project_path, sly_dataset_name):
+def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
     shutil.rmtree(sly_project_path, ignore_errors=True)  # WARN!
-
-    bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(kitti_dataset_path)
-    kitti_labels, kitti_calibs = read_kitti_annotations(label_paths, calib_paths)
-
-    sly.logger.info(f"Loading KITTI dataset with {len(bin_paths)} pointclouds")
-
-    # SET Project
     project_fs = sly.PointcloudProject(sly_project_path, OpenMode.CREATE)
-    dataset_fs = project_fs.create_dataset(sly_dataset_name)
 
-    sly.logger.info(f"Created Supervisely dataset with {dataset_fs.name} at {dataset_fs.directory}")
-    meta = convert_labels_to_meta(kitti_labels)
-    project_fs.set_meta(meta)
+    for kitti_dataset_path in os.listdir(kitti_base_dir):
+        kitti_dataset_name = kitti_dataset_path
+        kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_path)
 
-    progress_items_cb = init_ui_progress.get_progress_cb(g.api, g.task_id, f'Converting KITTI data', len(bin_paths))
-    for bin_path, kitti_label, image_path, calib_path in zip(bin_paths, kitti_labels, image_paths, calib_paths):
-        item_name = sly.fs.get_file_name(bin_path) + ".pcd"
-        item_path = dataset_fs.generate_item_path(item_name)
+        bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(kitti_dataset_path)
+        kitti_labels, kitti_calibs = read_kitti_annotations(label_paths, calib_paths, kitti_dataset_name)
 
-        convert_bin_to_pcd(bin_path, item_path)  # automatically save pointcloud to itempath
-        ann = convert_label_to_annotation(kitti_label, meta)
+        sly.logger.info(f"Loading KITTI dataset with {len(bin_paths)} pointclouds")
+        if kitti_dataset_name == "training":
+            dataset_fs = project_fs.create_dataset(train_ds_name)
+        elif kitti_dataset_name == "testing":
+            dataset_fs = project_fs.create_dataset(test_ds_name)
+        else:
+            raise Exception(f"Expecting: 'training' or 'testing' dataset name, instead of '{kitti_dataset_name}'")
 
-        dataset_fs.add_item_file(item_name, item_path, ann)
+        sly.logger.info(f"Created Supervisely dataset with {dataset_fs.name} at {dataset_fs.directory}")
+        if kitti_dataset_name == "training":
+            meta = convert_labels_to_meta(kitti_labels)
+            project_fs.set_meta(meta)
 
-        related_images_path = dataset_fs.get_related_images_path(item_name)
-        os.makedirs(related_images_path, exist_ok=True)
-        image_name = sly.fs.get_file_name_with_ext(image_path)
-        sly_path_img = os.path.join(related_images_path, image_name)
-        shutil.copy(src=image_path, dst=sly_path_img)
+        progress_items_cb = init_ui_progress.get_progress_cb(g.api,
+                                                             g.task_id,
+                                                             f'Converting dataset: {kitti_dataset_name}',
+                                                             len(bin_paths))
 
-        img_info = convert_calib_to_image_meta(image_name, calib_path)
-        sly.json.dump_json_file(img_info, sly_path_img + '.json')
-        #sly.logger.info(f".bin -> {item_name}")
-        progress_items_cb(1)
+        for bin_path, kitti_label, image_path, calib_path in zip(bin_paths, kitti_labels, image_paths, calib_paths):
+            item_name = sly.fs.get_file_name(bin_path) + ".pcd"
+            item_path = dataset_fs.generate_item_path(item_name)
 
-    sly.logger.info(f"Job done, dataset converted. Project_path: {sly_project_path}")
+            convert_bin_to_pcd(bin_path, item_path)  # automatically save pointcloud to itempath
+
+            if kitti_dataset_name == "training":
+                ann = convert_label_to_annotation(kitti_label, meta)
+                dataset_fs.add_item_file(item_name, item_path, ann)
+            else:
+                dataset_fs.add_item_file(item_name, item_path)
+
+            related_images_path = dataset_fs.get_related_images_path(item_name)
+            os.makedirs(related_images_path, exist_ok=True)
+            image_name = sly.fs.get_file_name_with_ext(image_path)
+            sly_path_img = os.path.join(related_images_path, image_name)
+            shutil.copy(src=image_path, dst=sly_path_img)
+
+            img_info = convert_calib_to_image_meta(image_name, calib_path)
+            sly.json.dump_json_file(img_info, sly_path_img + '.json')
+            #sly.logger.info(f".bin -> {item_name}")
+            progress_items_cb(1)
+
+        sly.logger.info(f"Job done, dataset converted. Project_path: {sly_project_path}")

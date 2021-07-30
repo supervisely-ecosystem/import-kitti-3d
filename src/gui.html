@@ -26,6 +26,7 @@
         #import-pascal-voc .el-tabs.el-tabs-cards .el-tabs__item { flex: 1; margin-bottom: -3px; padding: 9px 16px 13px;
         height: auto; line-height: normal; border-radius: 4px; }
     </sly-style>
+
     <sly-card class="mt15" title="Import" subtitle="Choose whether to import public or custom data">
         <el-tabs class="el-tabs-cards" type="border-card" v-model="state.mode">
             <el-tab-pane label="public" name="public">
@@ -33,38 +34,44 @@
                     Public Data
                     <div>Import public KITTI dataset</div>
                 </el-radio>
-                <sly-field title="Training Dataset" description="Training data">
+                <sly-field title="Training Dataset" description="Select amount of training scenes to upload">
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="train_100">100 Scenes</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_0">None</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="train_200">200 Scenes</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_100">100</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="train_300">300 Scenes</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_200">200</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="train_400">400 Scenes</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_300">300</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="train_500">500 Scenes</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_400">400</el-radio>
+                    </div>
+                    <div class="mt5">
+                        <el-radio v-model="state.training" slot="label" label="train_500">500</el-radio>
                     </div>
                 </sly-field>
-                <sly-field title="Testing Dataset" description="Testing data">
+                <sly-field title="Testing Dataset" description="Select amount of testing scenes to upload">
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="test_100">100 Scenes</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_0">None</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="test_200">200 Scenes</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_100">100</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="test_300">300 Scenes</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_200">200</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="test_400">400 Scenes</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_300">300</el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.size" slot="label" label="test_500">500 Scenes</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_400">400</el-radio>
+                    </div>
+                    <div class="mt5">
+                        <el-radio v-model="state.testing" slot="label" label="test_500">500</el-radio>
                     </div>
                 </sly-field>
 
@@ -84,16 +91,28 @@
     </sly-card>
 
     <div class="mt10">
-        <sly-card title="Output project">
+        <sly-card title="Output project"
+                  v-if="state.training !== 'train_0' || state.testing !== 'test_0' || state.mode === 'custom'">
             <sly-select-team-workspace :team-id.sync="state.teamId"
-                                       :workspace-id.sync="state.workspaceId"></sly-select-team-workspace>
-            <sly-field title="Project Name"
+                                       :workspace-id.sync="state.workspaceId"
+                                       :disabled="data.started">
+            </sly-select-team-workspace>
+            <sly-field title="Project name"
                        description="If project name already exists in selected workspace, a number will be added to the end of the name. e.g. my_project -> my_project_001">
-                <el-input v-model="state.resultingProjectName" placeholder="my_Project"></el-input>
+                <el-input v-model="state.resultingProjectName" :disabled="data.started"
+                          placeholder="my_Project"></el-input>
             </sly-field>
-            <sly-field title="Dataset Name"
-                       description="If dataset name already exists in selected project, a number will be added to the end of the name. e.g. my_dataset -> my_dataset_001">
-                <el-input v-model="state.resultingDatasetName" placeholder="my_Dataset"></el-input>
+            <sly-field title="Train dataset name"
+                       v-if="state.training !== 'train_0' && state.mode === 'public'">
+                <el-input v-model="state.resultingTrainDatasetName"
+                          :disabled="data.started"
+                          placeholder="Training_Dataset"></el-input>
+            </sly-field>
+            <sly-field title="Test dataset name"
+                       v-if="state.testing !== 'test_0' && state.mode === 'public'">
+                <el-input v-model="state.resultingTestDatasetName"
+                          :disabled="data.started"
+                          placeholder="Testing_Dataset"></el-input>
             </sly-field>
             <div class="fflex mt10">
                 <el-button
