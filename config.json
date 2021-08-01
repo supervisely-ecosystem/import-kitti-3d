@@ -1,5 +1,5 @@
 {
-  "name": "Import KITTI",
+  "name": "Import KITTI 3D",
   "type": "app",
   "categories": [
     "Import"
