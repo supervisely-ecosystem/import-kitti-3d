@@ -2,7 +2,7 @@ import os
 import supervisely_lib as sly
 
 
-my_app = sly.AppService()
+my_app = sly.AppService(ignore_task_id=True)
 api: sly.Api = my_app.public_api
 
 task_id = my_app.task_id
@@ -37,6 +37,3 @@ test_400 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-file
 
 train_500 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/500_training.zip"
 test_500 = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.3/500_testing.zip"
-
-#kitty_small_dl_link = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.1/SMALL_KITTI_data.zip"  # 20
-#kitty_med_dl_link = "https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases/download/v0.0.1/MEDIUM_KITTI_data.zip"    # 800
