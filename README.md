@@ -1,5 +1,5 @@
 <div align="center" markdown>
-<img src="https://i.imgur.com/IG75SR9.png"/>
+<img src="https://i.imgur.com/TzH2Bds.png"/>
 
 # Import KITTI 3D
 
@@ -55,13 +55,13 @@ Sub-folder `label_02/` is not included in testing data because it don't have any
 
 **Step 2**: Run app from `Team` -> `Plugins & Apps` page. After running the app you will be redirected to the `Tasks` page.
 
-<img src="https://i.imgur.com/xRalqat.png"/>
+<img src="https://i.imgur.com/HbDL4oQ.png"/>
 
 **Step 3**: Waiting until the app is started.
 
 Once app is started, new task will appear in `workspace tasks` (1). Wait for message `Application is started ...` and then press `Open` button (2).
 
-<img src="https://i.imgur.com/Qw8qGVJ.png"/>
+<img src="https://i.imgur.com/4XGOoC4.png"/>
 
 ## How to use
 
@@ -75,9 +75,9 @@ Once app is started, new task will appear in `workspace tasks` (1). Wait for mes
 4. Select destination `Team`, `Workspace` and `Project name`
 5. Press `Run`
 
-<img src="https://i.imgur.com/bBStzR2.png"/>
+<img src="https://i.imgur.com/2qXcmeb.png"/>
 
-**2. To import custom dataset** - select `Custom Data`, upload custom dataset to `Team` -> `Files` copy path to your dataset and paste it to the text input in the app gui.
+**2. To import custom dataset** - select `Custom Data`, upload archive with your dataset in KITTI format to `Team` -> `Files` and copy path to archive and paste it to the text input in the app gui.
 
 1. Select `Custom Data`
 2. Input path to your data from `Team` -> `Files`
@@ -87,8 +87,8 @@ Once app is started, new task will appear in `workspace tasks` (1). Wait for mes
 3. Select destination `Team`, `Workspace` and `Project name`
 4. Press `Run`
 
-<img src="https://i.imgur.com/ZII5d70.png"/>
+<img src="https://i.imgur.com/plGTEH9.png"/>
 
 You can access result project by clicking on it's name under the `Run` button. Resulting project will be saved to selected `Team` -> `Workspace`.
 
-<img src="https://i.imgur.com/WwmeoLV.png"/>
+<img src="https://i.imgur.com/UhveUR6.png"/>
