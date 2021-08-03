@@ -27,59 +27,72 @@
         height: auto; line-height: normal; border-radius: 4px; }
     </sly-style>
 
-    <sly-card class="mt15" title="Import" subtitle="Choose whether to import public or custom data">
+    <sly-card class="mt15">
         <el-tabs class="el-tabs-cards" type="border-card" v-model="state.mode">
             <el-tab-pane label="public" name="public">
-                <el-radio v-model="state.mode" slot="label" label="public">
-                    Public Data
-                    <div>Import public KITTI dataset</div>
+                <el-radio v-model="state.mode" slot="label" label="public" :disabled="data.started">
+                    Sample Data
+                    <div>Import prepared sample from the original KITTI dataset</div>
                 </el-radio>
-                <sly-field title="Training Dataset" description="Select amount of training scenes to upload">
+                <sly-field title="Training Dataset" description="Select a number of training scenes to import"
+                           :disabled="data.started">
                     <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_0">None</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_0" :disabled="data.started">None
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_100">100</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_100" :disabled="data.started">100
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_200">200</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_200" :disabled="data.started">200
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_300">300</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_300" :disabled="data.started">300
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_400">400</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_400" :disabled="data.started">400
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_500">500</el-radio>
+                        <el-radio v-model="state.training" slot="label" label="train_500" :disabled="data.started">500
+                        </el-radio>
                     </div>
                 </sly-field>
-                <sly-field title="Testing Dataset" description="Select amount of testing scenes to upload">
+                <sly-field title="Testing Dataset" description="Select a number of testing scenes to import">
                     <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_0">None</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_0" :disabled="data.started">None
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_100">100</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_100" :disabled="data.started">100
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_200">200</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_200" :disabled="data.started">200
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_300">300</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_300" :disabled="data.started">300
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_400">400</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_400" :disabled="data.started">400
+                        </el-radio>
                     </div>
                     <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_500">500</el-radio>
+                        <el-radio v-model="state.testing" slot="label" label="test_500" :disabled="data.started">500
+                        </el-radio>
                     </div>
                 </sly-field>
 
             </el-tab-pane>
             <el-tab-pane label="custom" name="custom">
-                <el-radio v-model="state.mode" slot="label" label="custom">
+                <el-radio v-model="state.mode" slot="label" label="custom" :disabled="data.started">
                     Custom Data
-                    <div>Import custom KITTI dataset</div>
+                    <div>Import your data in KITTI format</div>
                 </el-radio>
                 <sly-field title="Path to Custom Data"
                            description="Copy path to your KITTI custom data from Team Files and paste it to input field.">
