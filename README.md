@@ -46,7 +46,48 @@ Sub-folder `label_02/` is not included in testing data because it don't have any
 
 ###### [resource](https://github.com/bostondiditeam/kitti/blob/master/resources/devkit_object/readme.txt)
 
-`archive tree structure here`
+
+**Custom archive structure:**
+```text
+KITTI_DATA.tar(tar.gz/zip)
+├── testing
+│   ├── calib
+│   │   ├── 007000.txt
+│   │   ├── 007001.txt
+│   │   ├── 007002.txt
+│   │   └── ...
+│   ├── image_2
+│   │   ├── 007000.png
+│   │   ├── 007001.png
+│   │   ├── 007002.png
+│   │   └── ...
+│   └── velodyne
+│       ├── 007000.bin
+│       ├── 007001.bin
+│       ├── 007002.bin
+│       └── ...
+└── training
+    ├── calib
+    │   ├── 000000.txt
+    │   ├── 000001.txt
+    │   ├── 000002.txt
+    │   └── ...
+    ├── image_2
+    │   ├── 000000.png
+    │   ├── 000001.png
+    │   ├── 000002.png
+    │   └── ...
+    ├── label_2
+    │   ├── 000000.txt
+    │   ├── 000001.txt
+    │   ├── 000002.txt
+    │   └── ...
+    └── velodyne
+        ├── 000000.bin
+        ├── 000001.bin
+        ├── 000002.bin
+        └── ...
+```
 
 
 ## How To Run 
