@@ -48,6 +48,7 @@ Sub-folder `label_02/` is not included in testing data because it don't have any
 
 `archive tree structure here`
 
+
 ## How To Run 
 **Step 1**: Add app to your team from [Ecosystem](https://ecosystem.supervise.ly/apps/import-kitti-3d) if it is not there.
 
@@ -88,3 +89,8 @@ Once app is started, new task will appear in `workspace tasks` (1). Wait for mes
 You can access result project by clicking on it's name under the `Run` button. Resulting project will be saved to selected `Team` -> `Workspace`.
 
 <img src="https://i.imgur.com/UhveUR6.png" width=700/>
+
+### Watch Tutorial Video
+<a data-key="sly-embeded-video-link" href="https://youtu.be/-2CtWnBN9M8" data-video-code="2CtWnBN9M8">
+    <img src="https://i.imgur.com/0mYF2Oz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+</a>
