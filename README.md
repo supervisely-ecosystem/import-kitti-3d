@@ -71,7 +71,7 @@ Once app is started, new task will appear in `workspace tasks` (1). Wait for mes
 4. Select destination `Team`, `Workspace`, `Project name` and `Dataset` name (or names if you import both `training` and `testing` data)
 5. Press `Run`
 
-<img src="https://i.imgur.com/2qXcmeb.png"/>
+<img src="https://i.imgur.com/2qXcmeb.png" width=700/>
 
 **2. To import your data in KITTI 3D format** - select `Custom Data`, upload archive with your dataset in KITTI format to `Team` -> `Files` and copy path to archive and paste it to the text input in the app gui.
 
@@ -83,8 +83,8 @@ Once app is started, new task will appear in `workspace tasks` (1). Wait for mes
 3. Select destination `Team`, `Workspace` and `Project name`
 4. Press `Run`
 
-<img src="https://i.imgur.com/plGTEH9.png"/>
+<img src="https://i.imgur.com/plGTEH9.png"  width=700/>
 
 You can access result project by clicking on it's name under the `Run` button. Resulting project will be saved to selected `Team` -> `Workspace`.
 
-<img src="https://i.imgur.com/UhveUR6.png"/>
+<img src="https://i.imgur.com/UhveUR6.png" width=700/>
