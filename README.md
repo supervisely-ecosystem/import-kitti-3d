@@ -133,5 +133,5 @@ You can access result project by clicking on it's name under the `Run` button. R
 
 ### Watch Tutorial Video
 <a data-key="sly-embeded-video-link" href="https://youtu.be/-2CtWnBN9M8" data-video-code="2CtWnBN9M8">
-    <img src="https://i.imgur.com/p1uZEXn.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+    <img src="https://i.imgur.com/0mYF2Oz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
 </a>
