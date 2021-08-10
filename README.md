@@ -22,7 +22,7 @@
 ## Overview
 Converts [KITTI 3D](http://www.cvlibs.net/datasets/kitti/) format to [Supervisely](https://docs.supervise.ly/data-organization/00_ann_format_navi) and creates a new project in selected `Team` -> `Workspace`. Backward compatible with [`Export to KITTI 3D`](https://github.com/supervisely-ecosystem/export-to-kitti-3d) app.
 
-App can import sample data from original KITTI dataset with user selected amount of scenes for training and testing data: `100`, `200`, `300`, `400` or `500`. User also can import an archive with KITTI data from `Team Files`. If you want to import full KITTI dataset, you must download it manually from [KITTI website](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) and upload it to `Team Files`. **App supports only left color images**.
+App can import [sample data](https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases) from original KITTI dataset with user selected amount of scenes for training and testing data: `100`, `200`, `300`, `400` or `500` scenes. User also can import an archive with KITTI data from `Team Files`. If you want to import full KITTI dataset, you must download it manually from [KITTI website](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) and upload it to `Team Files`. **App supports only left color images**.
 
 <img src="https://i.imgur.com/riv6fFJ.png">
 
@@ -38,7 +38,7 @@ The sub-folders are structured as follows:
   - `calib/` - contains the calibration for all four cameras (plain text file)
   - `velodyne/` - contains KITTI LIDAR point cloud binary files
 
-Sub-folder `label_02/` is not included in testing data because it don't have any labels. The label files contain the following information, which can be read and written using the matlab tools (readLabels.m, writeLabels.m) provided within this devkit. All values (numerical or strings) are separated via spaces, each row corresponds to one object.
+Sub-folder `label_02/` is not included in testing data because it don't have any labels. The label files contain the following information, which can be read and written using the matlab tools (readLabels.m, writeLabels.m) provided within KITTI devkit. All values (numerical or strings) are separated via spaces, each row corresponds to one object.
 
 **The 15 columns represent:**
 
