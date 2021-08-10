@@ -60,5 +60,5 @@ def upload_sly_pcd(project_dir, workspace_id, project_name):
         {"field": "data.resultProjectPreviewUrl", "payload": g.api.image.preview_url("https://i.imgur.com/qmuNM6J.png", 100, 100)}
     ]
     g.api.task.set_fields(g.task_id, fields)
-    g.my_app.show_modal_window(f"'{state['resultingProjectName']}' project has been successfully imported.")
+    g.my_app.show_modal_window(f"'{project.name}' project has been successfully imported.")
     g.my_app.stop()
