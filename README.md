@@ -121,7 +121,7 @@ Once app is started, new task will appear in `workspace tasks` (1). Wait for mes
 1. Select `Custom Data`
 2. Input path to your data from `Team` -> `Files`
 
-<img src="https://i.imgur.com/olDBHFg.gif" width="700"/>
+<img src="https://i.imgur.com/A7ZcnyH.gif" width="700"/>
 
 3. Select destination `Team`, `Workspace` and `Project name`
 4. Press `Run`
@@ -133,6 +133,6 @@ You can access result project by clicking on it's name under the `Run` button. R
 <img src="https://i.imgur.com/UhveUR6.png" width=700/>
 
 ### Demo
-<a data-key="sly-embeded-video-link" href="https://youtu.be/-2CtWnBN9M8" data-video-code="-2CtWnBN9M8">
+<a data-key="sly-embeded-video-link" href="https://youtu.be/Rrl2FcU9p_o" data-video-code="Rrl2FcU9p_o">
     <img src="https://i.imgur.com/0mYF2Oz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
 </a>
