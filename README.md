@@ -1,13 +1,14 @@
 <div align="center" markdown>
-<img src="https://i.imgur.com/TzH2Bds.png"/>
+<img src="https://i.imgur.com/ECZhhR0.png"/>
 
 # Import KITTI 3D
 
 <p align="center">
   <a href="#Overview">Overview</a> •
-  <a href="#Preparation">Preparation</a> •
+  <a href="#Data-Format-Description">Data Format Description</a> •
   <a href="#How-To-Run">How To Run</a> •
-  <a href="#How-To-Use">How To Use</a>
+  <a href="#How-To-Use">How To Use</a> •
+  <a href="#Demo">Demo</a>
 </p>
   
 [![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/import-kitti-3d)
@@ -131,7 +132,7 @@ You can access result project by clicking on it's name under the `Run` button. R
 
 <img src="https://i.imgur.com/UhveUR6.png" width=700/>
 
-### Watch Tutorial Video
+### Demo
 <a data-key="sly-embeded-video-link" href="https://youtu.be/-2CtWnBN9M8" data-video-code="2CtWnBN9M8">
     <img src="https://i.imgur.com/0mYF2Oz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
 </a>

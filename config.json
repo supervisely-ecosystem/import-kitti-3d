@@ -2,10 +2,11 @@
   "name": "Import KITTI 3D",
   "type": "app",
   "categories": [
-    "Import"
+    "Import",
+    "3D"
   ],
   "description": "Converts KITTI format to Supervisely",
-  "docker_image": "supervisely/import-export-kitty:1.0.0",
+  "docker_image": "supervisely/import-export-kitty:1.0.1",
   "main_script": "src/main.py",
   "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
