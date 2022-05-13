@@ -2,8 +2,8 @@
   "name": "Import KITTI 3D",
   "type": "app",
   "categories": [
-    "Import",
-    "3D"
+    "import",
+    "pointclouds"
   ],
   "description": "Converts KITTI 3D format to Supervisely pointcloud format",
   "docker_image": "supervisely/import-export-kitty:1.0.1",
