@@ -3,7 +3,7 @@ import shutil
 import requests
 import globals as g
 import init_ui_progress
-from supervisely_lib.io.fs import download, file_exists, silent_remove
+from supervisely.io.fs import download, file_exists, silent_remove
 
 
 def download_kitty(link, save_path, file_name, app_logger):

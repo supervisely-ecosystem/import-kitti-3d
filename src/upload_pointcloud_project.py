@@ -1,8 +1,8 @@
 import globals as g
-import supervisely_lib as sly
-from supervisely_lib.io.json import load_json_file
-from supervisely_lib.api.module_api import ApiField
-from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+import supervisely as sly
+from supervisely.io.json import load_json_file
+from supervisely.api.module_api import ApiField
+from supervisely.video_annotation.key_id_map import KeyIdMap
 
 import init_ui_progress
 

@@ -5,10 +5,10 @@ import numpy as np
 import globals as g
 import open3d as o3d
 import init_ui_progress
-import supervisely_lib as sly
-from supervisely_lib.geometry.cuboid_3d import Cuboid3d, Vector3d
-from supervisely_lib.pointcloud_annotation.pointcloud_object_collection import PointcloudObjectCollection
-from supervisely_lib.project.pointcloud_project import OpenMode
+import supervisely as sly
+from supervisely.geometry.cuboid_3d import Cuboid3d, Vector3d
+from supervisely.pointcloud_annotation.pointcloud_object_collection import PointcloudObjectCollection
+from supervisely.project.pointcloud_project import OpenMode
 
 
 def get_kitti_files_list(kitti_dataset_path):
