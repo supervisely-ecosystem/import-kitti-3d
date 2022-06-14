@@ -2,7 +2,7 @@ import os
 import init_ui
 import globals as g
 import init_ui_progress
-import supervisely_lib as sly
+import supervisely as sly
 
 import kitti_downloader
 import convert_kitti3d_to_sly
