@@ -29,5 +29,5 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          file: Dockerfile
+          file: docker/Dockerfile
           tags: supervisely/import-export-kitty:${{ github.event.inputs.tag_version }}
