@@ -1,4 +1,4 @@
-supervisely==6.35.0
-supervisely[apps]==6.35.0
+supervisely==6.36.0
+supervisely[apps]==6.36.0
 # open3d==0.13.0
 scikit-image==0.18.3
