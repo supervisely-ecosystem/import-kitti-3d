@@ -2,7 +2,6 @@
 # learn more here: https://github.com/supervisely/supervisely/blob/master/base_images/py/Dockerfile
 FROM supervisely/base-py-sdk:6.1.104
 
-RUN sudo apt-get update
 RUN pip install supervisely==6.1.104
 RUN python -m pip install open3d==0.13.0
 RUN pip install scikit-image==0.18.3
