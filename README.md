@@ -1,5 +1,5 @@
 <div align="center" markdown>
-<img src="https://i.imgur.com/ECZhhR0.png"/>
+<img src="https://user-images.githubusercontent.com/106374579/183403786-4cc8f6bc-d8dc-4459-a20e-77897e272b8b.png"/>
 
 # Import KITTI 3D
 
