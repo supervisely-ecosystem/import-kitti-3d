@@ -43,7 +43,9 @@ def upload_sly_pcd(project_dir, workspace_id, project_name):
                 rimg_infos = []
                 for img_path, meta_json in related_items:
                     # img_name = sly.fs.get_file_name(img_path)
-                    img = g.api.pointcloud.upload_related_image(img_path)[0]
+                    img = g.api.pointcloud.upload_related_image(img_path)
+                    if isinstance(img, list):
+                        img = img[0]
                     rimg_infos.append({ApiField.ENTITY_ID: pointcloud.id,
                                        ApiField.NAME: meta_json[ApiField.NAME],
                                        ApiField.HASH: img,
