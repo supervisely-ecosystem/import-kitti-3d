@@ -117,6 +117,7 @@ def convert_calib_to_image_meta(image_name, calib_path, camera_num=2):
     data = {
         "name": image_name,
         "meta": {
+            "deviceId": "CAM_LEFT",
             "sensorsData": {
                 "extrinsicMatrix": list(extrinsic_matrix.flatten().astype(float)),
                 "intrinsicMatrix": list(intrinsic_matrix.flatten().astype(float))
