@@ -24,7 +24,7 @@ Converts [KITTI 3D](http://www.cvlibs.net/datasets/kitti/) format to [Supervisel
 
 App can import [sample data](https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases) from original KITTI dataset with user selected amount of scenes for training and testing data: `100`, `200`, `300`, `400` or `500` scenes. User also can import an archive with KITTI data from `Team Files`. If you want to import full KITTI dataset, you must download it manually from [KITTI website](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) and upload it to `Team Files`. **App supports only left color images**.
 
-<img src="https://i.imgur.com/riv6fFJ.png">
+<img src="media/ov.png">
 
 KITTI object detection and orientation estimation benchmarks, consisting of 7481 training images and 7518 test images for each task, as well as the corresponding point clouds, comprising a total of 80.256 labeled objects, and 8 different labeled classes, only the classes `Car` and `Pedestrian` are evaluated in KITTI benchmark. `DontCare` labels denote regions in which objects have not been labeled, for example because they have been too far away from the laser scanner. You can use the `DontCare` labels in the training set to avoid that your object detector is harvesting hard negatives from those areas, in case you consider non-object regions from the training images as negative examples.
 
@@ -42,7 +42,7 @@ Sub-folder `label_02/` is not included in testing data because it don't have any
 
 **The 15 columns represent:**
 
-<img src="https://i.imgur.com/JumBfcw.png" width=700>
+<img src="media/data.png" width=700>
 
 ###### [resource](https://github.com/bostondiditeam/kitti/blob/master/resources/devkit_object/readme.txt)
 
@@ -95,13 +95,13 @@ KITTI_DATA.tar(tar.gz/zip)
 
 **Step 2**: Run app from `Team` -> `Plugins & Apps` page. After running the app you will be redirected to the `Tasks` page.
 
-<img src="https://i.imgur.com/HbDL4oQ.png"/>
+<img src="media/htr2.png"/>
 
 **Step 3**: Waiting until the app is started.
 
 Once app is started, new task will appear in `workspace tasks` (1). Wait for message `Application is started ...` and then press `Open` button (2).
 
-<img src="https://i.imgur.com/4XGOoC4.png"/>
+<img src="media/htr3.png"/>
 
 ## How to use
 
@@ -113,25 +113,25 @@ Once app is started, new task will appear in `workspace tasks` (1). Wait for mes
 4. Select destination `Team`, `Workspace`, `Project name` and `Dataset` name (or names if you import both `training` and `testing` data)
 5. Press `Run`
 
-<img src="https://i.imgur.com/2qXcmeb.png" width=700/>
+<img src="media/htu1.png" width=700/>
 
 **2. To import your data in KITTI 3D format** - select `Custom Data`, upload archive with your dataset in KITTI format to `Team` -> `Files` and copy path to archive and paste it to the text input in the app gui.
 
 1. Select `Custom Data`
 2. Input path to your data from `Team` -> `Files`
 
-<img src="https://i.imgur.com/A7ZcnyH.gif" width="700"/>
+<img src="media/htu2.gif" width="700"/>
 
 3. Select destination `Team`, `Workspace` and `Project name`
 4. Press `Run`
 
-<img src="https://i.imgur.com/plGTEH9.png"  width=700/>
+<img src="media/htu2a.png"  width=700/>
 
 You can access result project by clicking on it's name under the `Run` button. Resulting project will be saved to selected `Team` -> `Workspace`.
 
-<img src="https://i.imgur.com/UhveUR6.png" width=700/>
+<img src="media/htu2b.png" width=700/>
 
 ### Demo
 <a data-key="sly-embeded-video-link" href="https://youtu.be/Rrl2FcU9p_o" data-video-code="Rrl2FcU9p_o">
-    <img src="https://i.imgur.com/0mYF2Oz.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
+    <img src="media/d.png" alt="SLY_EMBEDED_VIDEO_LINK"  style="max-width:100%;">
 </a>
