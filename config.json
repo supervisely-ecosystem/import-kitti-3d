@@ -6,7 +6,7 @@
         "pointclouds"
     ],
     "description": "Converts KITTI 3D format to Supervisely pointcloud format",
-    "docker_image": "supervisely/import-export:0.0.2",
+    "docker_image": "supervisely/import-export:0.0.5",
     "instance_version": "6.4.57",
     "main_script": "src/main.py",
     "gui_template": "src/gui.html",
