@@ -7,7 +7,9 @@ import open3d as o3d
 import init_ui_progress
 import supervisely as sly
 from supervisely.geometry.cuboid_3d import Cuboid3d, Vector3d
-from supervisely.pointcloud_annotation.pointcloud_object_collection import PointcloudObjectCollection
+from supervisely.pointcloud_annotation.pointcloud_object_collection import (
+    PointcloudObjectCollection,
+)
 from supervisely.project.pointcloud_project import OpenMode
 
 
@@ -17,11 +19,17 @@ def get_kitti_files_list(kitti_dataset_path):
     if len(bin_paths) < 1:
         sly.logger.error(f"No pointclouds found! Check path: {binfiles_glob}")
 
-    image_paths = [x.replace('velodyne', 'image_2').replace('.bin', '.png') for x in bin_paths]
-    calib_paths = [x.replace('velodyne', 'calib').replace('.bin', '.txt') for x in bin_paths]
+    image_paths = [
+        x.replace("velodyne", "image_2").replace(".bin", ".png") for x in bin_paths
+    ]
+    calib_paths = [
+        x.replace("velodyne", "calib").replace(".bin", ".txt") for x in bin_paths
+    ]
 
     if os.path.exists(os.path.join(kitti_dataset_path, "label_2")):
-        label_paths = [x.replace('velodyne', 'label_2').replace('.bin', '.txt') for x in bin_paths]
+        label_paths = [
+            x.replace("velodyne", "label_2").replace(".bin", ".txt") for x in bin_paths
+        ]
     else:
         label_paths = []
         for x in bin_paths:
@@ -53,11 +61,19 @@ def convert_labels_to_meta(labels, geometry=Cuboid3d):
 
 
 def convert_bin_to_pcd(bin_file, save_filepath):
-    bin = np.fromfile(bin_file, dtype=np.float32).reshape(-1, 4)
+    try:
+        bin = np.fromfile(bin_file, dtype=np.float32).reshape(-1, 4)
+    except ValueError as e:
+        raise Exception(
+            f"Incorrect data in the KITTI 3D pointcloud file: {bin_file}. "
+            f"There was an error while trying to reshape the data into a 4-column matrix: {e}. "
+            "Please ensure that the binary file contains a multiple of 4 elements to be "
+            "successfully reshaped into a (N, 4) array.\n"
+        )
     points = bin[:, 0:3]
     intensity = bin[:, -1]
     intensity_fake_rgb = np.zeros((intensity.shape[0], 3))
-    intensity_fake_rgb[:,0] = intensity
+    intensity_fake_rgb[:, 0] = intensity
     pc = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
     pc.colors = o3d.utility.Vector3dVector(intensity_fake_rgb)
     o3d.io.write_point_cloud(save_filepath, pc)
@@ -97,22 +113,24 @@ def convert_label_to_annotation(label, meta):
 
 
 def convert_calib_to_image_meta(image_name, calib_path, camera_num=2):
-    with open(calib_path, 'r') as f:
+    with open(calib_path, "r") as f:
         lines = f.readlines()
 
     assert 0 < camera_num < 4
-    intrinsic_matrix = lines[camera_num].strip().split(' ')[1:]
-    intrinsic_matrix = np.array(intrinsic_matrix, dtype=np.float32).reshape(3, 4)[:3, :3]
+    intrinsic_matrix = lines[camera_num].strip().split(" ")[1:]
+    intrinsic_matrix = np.array(intrinsic_matrix, dtype=np.float32).reshape(3, 4)[
+        :3, :3
+    ]
 
-    obj = lines[4].strip().split(' ')[1:]
+    obj = lines[4].strip().split(" ")[1:]
     rect_4x4 = np.eye(4, dtype=np.float32)
     rect_4x4[:3, :3] = np.array(obj, dtype=np.float32).reshape(3, 3)
 
-    obj = lines[5].strip().split(' ')[1:]
+    obj = lines[5].strip().split(" ")[1:]
     Tr_velo_to_cam = np.eye(4, dtype=np.float32)
     Tr_velo_to_cam[:3] = np.array(obj, dtype=np.float32).reshape(3, 4)
     world_cam = np.transpose(rect_4x4 @ Tr_velo_to_cam)
-    extrinsic_matrix = world_cam[:4,:3].T
+    extrinsic_matrix = world_cam[:4, :3].T
 
     data = {
         "name": image_name,
@@ -120,9 +138,9 @@ def convert_calib_to_image_meta(image_name, calib_path, camera_num=2):
             "deviceId": "CAM_LEFT",
             "sensorsData": {
                 "extrinsicMatrix": list(extrinsic_matrix.flatten().astype(float)),
-                "intrinsicMatrix": list(intrinsic_matrix.flatten().astype(float))
-            }
-        }
+                "intrinsicMatrix": list(intrinsic_matrix.flatten().astype(float)),
+            },
+        },
     }
     return data
 
@@ -135,8 +153,12 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
         kitti_dataset_name = kitti_dataset_path
         kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_path)
 
-        bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(kitti_dataset_path)
-        kitti_labels, kitti_calibs = read_kitti_annotations(label_paths, calib_paths, kitti_dataset_name)
+        bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(
+            kitti_dataset_path
+        )
+        kitti_labels, kitti_calibs = read_kitti_annotations(
+            label_paths, calib_paths, kitti_dataset_name
+        )
 
         sly.logger.info(f"Loading KITTI dataset with {len(bin_paths)} pointclouds")
         if kitti_dataset_name == "training":
@@ -144,23 +166,33 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
         elif kitti_dataset_name == "testing":
             dataset_fs = project_fs.create_dataset(test_ds_name)
         else:
-            raise Exception(f"Expecting: 'training' or 'testing' dataset name, instead of '{kitti_dataset_name}'")
+            raise Exception(
+                f"Expecting: 'training' or 'testing' dataset name, instead of '{kitti_dataset_name}'"
+            )
 
-        sly.logger.info(f"Created Supervisely dataset with {dataset_fs.name} at {dataset_fs.directory}")
+        sly.logger.info(
+            f"Created Supervisely dataset with {dataset_fs.name} at {dataset_fs.directory}"
+        )
         if kitti_dataset_name == "training":
             meta = convert_labels_to_meta(kitti_labels)
             project_fs.set_meta(meta)
 
-        progress_items_cb = init_ui_progress.get_progress_cb(g.api,
-                                                             g.task_id,
-                                                             f'Converting dataset: {kitti_dataset_name}',
-                                                             len(bin_paths))
+        progress_items_cb = init_ui_progress.get_progress_cb(
+            g.api,
+            g.task_id,
+            f"Converting dataset: {kitti_dataset_name}",
+            len(bin_paths),
+        )
 
-        for bin_path, kitti_label, image_path, calib_path in zip(bin_paths, kitti_labels, image_paths, calib_paths):
+        for bin_path, kitti_label, image_path, calib_path in zip(
+            bin_paths, kitti_labels, image_paths, calib_paths
+        ):
             item_name = sly.fs.get_file_name(bin_path) + ".pcd"
             item_path = dataset_fs.generate_item_path(item_name)
 
-            convert_bin_to_pcd(bin_path, item_path)  # automatically save pointcloud to itempath
+            convert_bin_to_pcd(
+                bin_path, item_path
+            )  # automatically save pointcloud to itempath
 
             if kitti_dataset_name == "training":
                 ann = convert_label_to_annotation(kitti_label, meta)
@@ -175,8 +207,10 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
             shutil.copy(src=image_path, dst=sly_path_img)
 
             img_info = convert_calib_to_image_meta(image_name, calib_path)
-            sly.json.dump_json_file(img_info, sly_path_img + '.json')
-            #sly.logger.info(f".bin -> {item_name}")
+            sly.json.dump_json_file(img_info, sly_path_img + ".json")
+            # sly.logger.info(f".bin -> {item_name}")
             progress_items_cb(1)
 
-        sly.logger.info(f"Job done, dataset converted. Project_path: {sly_project_path}")
+        sly.logger.info(
+            f"Job done, dataset converted. Project_path: {sly_project_path}"
+        )
