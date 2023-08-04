@@ -2,3 +2,4 @@
 venv
 /src/debug
 .idea
+.venv
