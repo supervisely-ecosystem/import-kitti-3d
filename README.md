@@ -45,6 +45,7 @@ Sub-folder `label_02/` is not included in testing data because it don't have any
 <img src="https://i.imgur.com/JumBfcw.png" width=700>
 
 ###### [resource](https://github.com/bostondiditeam/kitti/blob/master/resources/devkit_object/readme.txt)
+ℹ️ You can download the archive with data example [here](https://github.com/supervisely-ecosystem/import-kitti-3d/files/12548999/training.zip).
 
 
 **Custom archive structure:**
