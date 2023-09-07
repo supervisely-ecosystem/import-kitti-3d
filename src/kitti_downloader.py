@@ -3,7 +3,7 @@ import shutil
 import requests
 import globals as g
 import init_ui_progress
-from supervisely.io.fs import download, file_exists, silent_remove
+from supervisely.io.fs import download, file_exists, silent_remove, unpack_archive
 
 
 def download_kitty(link, save_path, file_name, app_logger):
@@ -16,7 +16,8 @@ def download_kitty(link, save_path, file_name, app_logger):
         download(link, save_path, cache=g.my_app.cache, progress=progress_cb)
         init_ui_progress.reset_progress(g.api, g.task_id)
         app_logger.info(f"{file_name} has been successfully downloaded")
-    shutil.unpack_archive(save_path, g.kitti_base_dir, format="zip")
+    unpack_archive(save_path, g.kitti_base_dir, remove_junk=True)
+    # shutil.unpack_archive(save_path, g.kitti_base_dir, format="zip")
     silent_remove(save_path)
 
 
