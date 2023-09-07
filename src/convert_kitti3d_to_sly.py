@@ -149,6 +149,9 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
     shutil.rmtree(sly_project_path, ignore_errors=True)  # WARN!
     project_fs = sly.PointcloudProject(sly_project_path, OpenMode.CREATE)
 
+    sly.fs.remove_junk_from_dir(kitti_base_dir)
+    sly.logger.debug(f"Removed junk files from {kitti_base_dir}...")
+
     for kitti_dataset_path in os.listdir(kitti_base_dir):
         kitti_dataset_name = kitti_dataset_path
         kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_path)
