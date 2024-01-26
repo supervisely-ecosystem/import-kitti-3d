@@ -161,14 +161,14 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
             return True
         return False
 
-    datasets = [x for x in sly.fs.dirs_filter(kitti_base_dir, _check_function)]
+    base_dir = [x for x in sly.fs.dirs_filter(kitti_base_dir, _check_function)]
 
-    if len(datasets) == 0:
+    if len(base_dir) == 0:
         raise Exception(
             f"KITTI 3D datasets not found in the directory: {kitti_base_dir}"
         )
-
-    for kitti_dataset_path in datasets:
+    kitti_base_dir = base_dir[0]
+    for kitti_dataset_path in os.listdir(kitti_base_dir):
         kitti_dataset_name = os.path.basename(os.path.normpath(kitti_dataset_path))
         # kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_path)
 
