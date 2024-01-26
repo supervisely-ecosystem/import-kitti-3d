@@ -46,9 +46,7 @@ def get_kitti_files_list(kitti_dataset_path):
             else:
                 label_paths.append(None)
         else:
-            sly.logger.warn(
-                f"Skipping pointcloud: {bin_path}. Photo context or calib file is missing"
-            )
+            sly.logger.warn(f"Skipping pointcloud: {sly.fs.get_file_name(bin_path)}.")
 
             if not file_exists(image_path):
                 missing_image_paths.append(image_path)
@@ -60,17 +58,11 @@ def get_kitti_files_list(kitti_dataset_path):
         image_names = [sly.fs.get_file_name(x) for x in missing_image_paths]
         calib_names = [sly.fs.get_file_name(x) for x in missing_calib_paths]
         err_msg = (
-            "Some files are missing: "
-            f"  - {len(missing_image_paths)} photo context - {image_names}, "
-            f"  - {len(missing_calib_paths)} calib files - {calib_names}"
+            "Some files are missing:\n"
+            f"  - {len(missing_image_paths)} photo context - {image_names},\n"
+            f"  - {len(missing_calib_paths)} calibration files - {calib_names}"
         )
         sly.logger.warn(err_msg)
-
-    if len(filtered_bin_paths) == 0:
-        raise Exception(
-            "Failed to find any pointcloud with corresponding photo context and calib file"
-            f"in the directory: {kitti_dataset_path}"
-        )
 
     return filtered_bin_paths, label_paths, image_paths, calib_paths
 
@@ -192,16 +184,14 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
     def _check_function(path):
         if not os.path.isdir(path):
             return False
-        if all([x in os.listdir(path) for x in ["training", "testing"]]):
+        if all([x in ["training", "testing"] for x in os.listdir(path)]):
             return True
         return False
 
     base_dir = [x for x in sly.fs.dirs_filter(kitti_base_dir, _check_function)]
 
     if len(base_dir) == 0:
-        raise Exception(
-            f"KITTI 3D datasets not found in the directory: {kitti_base_dir}"
-        )
+        raise Exception(f"KITTI 3D datasets not found in the dataset {kitti_base_dir}")
     kitti_base_dir = base_dir[0]
     for kitti_dataset_name in os.listdir(kitti_base_dir):
         kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_name)
@@ -209,6 +199,11 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
         bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(
             kitti_dataset_path
         )
+        if len(bin_paths) == 0:
+            sly.logger.warn(
+                f"Skipping KITTI dataset: {kitti_dataset_name}. Not found correct data."
+            )
+            continue
         kitti_labels, kitti_calibs = read_kitti_annotations(
             label_paths, calib_paths, kitti_dataset_name
         )
