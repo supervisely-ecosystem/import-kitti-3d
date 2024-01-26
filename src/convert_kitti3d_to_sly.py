@@ -46,7 +46,7 @@ def get_kitti_files_list(kitti_dataset_path):
             else:
                 label_paths.append(None)
         else:
-            sly.logger.warn(f"Skipping pointcloud: {sly.fs.get_file_name(bin_path)}.")
+            sly.logger.warn(f"Skipping pointcloud: {sly.fs.get_file_name_with_ext(bin_path)}.")
 
             if not file_exists(image_path):
                 missing_image_paths.append(image_path)
@@ -55,8 +55,8 @@ def get_kitti_files_list(kitti_dataset_path):
                 missing_calib_paths.append(calib_path)
 
     if len(missing_image_paths) > 0 or len(missing_calib_paths) > 0:
-        image_names = [sly.fs.get_file_name(x) for x in missing_image_paths]
-        calib_names = [sly.fs.get_file_name(x) for x in missing_calib_paths]
+        image_names = [sly.fs.get_file_name_with_ext(x) for x in missing_image_paths]
+        calib_names = [sly.fs.get_file_name_with_ext(x) for x in missing_calib_paths]
         err_msg = (
             "Some files are missing:\n"
             f"  - {len(missing_image_paths)} photo context - {image_names},\n"
@@ -75,7 +75,7 @@ def read_kitti_annotations(label_paths, calib_paths, ds_name):
         if ds_name == "training":
             if label_file is None:
                 raise Exception(
-                    f"Failed to find label file for training dataset: {label_file}"
+                    f"One of the pointclouds in the training dataset does not have a corresponding label file"
                 )
             labels = o3d.ml.datasets.KITTI.read_label(label_file, calib)
             all_labels.append(labels)
