@@ -3,7 +3,7 @@ import os
 import shutil
 
 import numpy as np
-import open3d as o3d
+# import open3d as o3d
 import supervisely as sly
 from supervisely.geometry.cuboid_3d import Cuboid3d, Vector3d
 from supervisely.io.fs import file_exists
@@ -73,6 +73,10 @@ def read_kitti_annotations(label_paths, calib_paths, ds_name):
     for label_file, calib_file in zip(label_paths, calib_paths):
         calib = o3d.ml.datasets.KITTI.read_calib(calib_file)
         if ds_name == "training":
+            if label_file is None:
+                raise Exception(
+                    f"Failed to find label file for training dataset: {label_file}"
+                )
             labels = o3d.ml.datasets.KITTI.read_label(label_file, calib)
             all_labels.append(labels)
         all_calib.append(calib)
@@ -99,13 +103,13 @@ def convert_bin_to_pcd(bin_file, save_filepath):
             "Please ensure that the binary file contains a multiple of 4 elements to be "
             "successfully reshaped into a (N, 4) array.\n"
         )
-    points = bin[:, 0:3]
-    intensity = bin[:, -1]
-    intensity_fake_rgb = np.zeros((intensity.shape[0], 3))
-    intensity_fake_rgb[:, 0] = intensity
-    pc = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
-    pc.colors = o3d.utility.Vector3dVector(intensity_fake_rgb)
-    o3d.io.write_point_cloud(save_filepath, pc)
+    # points = bin[:, 0:3]
+    # intensity = bin[:, -1]
+    # intensity_fake_rgb = np.zeros((intensity.shape[0], 3))
+    # intensity_fake_rgb[:, 0] = intensity
+    # pc = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+    # pc.colors = o3d.utility.Vector3dVector(intensity_fake_rgb)
+    # o3d.io.write_point_cloud(save_filepath, pc)
 
 
 def flatten(list_2d):
@@ -183,6 +187,8 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
 
     def _check_function(path):
         if not os.path.isdir(path):
+            return False
+        if len(os.listdir(path)) == 0:
             return False
         if all([x in ["training", "testing"] for x in os.listdir(path)]):
             return True
