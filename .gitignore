@@ -5,3 +5,4 @@ debug
 .idea
 .venv
 supervisely
+__pycache__
