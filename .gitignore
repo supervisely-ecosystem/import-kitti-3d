@@ -1,5 +1,7 @@
 /secret_debug.env
 venv
 /src/debug
+debug
 .idea
 .venv
+supervisely

@@ -1,16 +1,18 @@
-import os
 import glob
+import os
 import shutil
+
 import numpy as np
-import globals as g
 import open3d as o3d
-import init_ui_progress
 import supervisely as sly
 from supervisely.geometry.cuboid_3d import Cuboid3d, Vector3d
 from supervisely.pointcloud_annotation.pointcloud_object_collection import (
     PointcloudObjectCollection,
 )
 from supervisely.project.pointcloud_project import OpenMode
+
+import globals as g
+import init_ui_progress
 
 
 def get_kitti_files_list(kitti_dataset_path):
@@ -152,9 +154,23 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
     sly.fs.remove_junk_from_dir(kitti_base_dir)
     sly.logger.debug(f"Removed junk files from {kitti_base_dir}...")
 
-    for kitti_dataset_path in os.listdir(kitti_base_dir):
-        kitti_dataset_name = kitti_dataset_path
-        kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_path)
+    def _check_function(path):
+        if not os.path.isdir(path):
+            return False
+        if all([x in os.listdir(path) for x in ["training", "testing"]]):
+            return True
+        return False
+
+    datasets = sly.fs.dirs_filter(kitti_base_dir, check_function=_check_function)
+
+    if len(datasets) == 0:
+        raise Exception(
+            f"KITTI 3D datasets not found in the directory: {kitti_base_dir}"
+        )
+
+    for kitti_dataset_path in datasets:
+        kitti_dataset_name = os.path.basename(os.path.normpath(kitti_dataset_path))
+        # kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_path)
 
         bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(
             kitti_dataset_path

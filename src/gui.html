@@ -1,156 +1,260 @@
 <div id="import-pascal-voc">
-    <sly-style>
-        #import-pascal-voc .centered-tabs .el-tabs__nav { width: 100%;}
-        #import-pascal-voc .centered-tabs .el-tabs__nav .el-tabs__item {
-        width: 50%;
-        text-align: center;
-        }
+  <sly-style>
+    #import-pascal-voc .centered-tabs .el-tabs__nav { width: 100%;}
+    #import-pascal-voc .centered-tabs .el-tabs__nav .el-tabs__item { width: 50%;
+    text-align: center; } #import-pascal-voc .el-tabs.el-tabs-cards .el-radio {
+    display: flex; align-items: start; /*margin-bottom: 10px;*/ margin-left: 0;
+    white-space: normal; } #import-pascal-voc .el-tabs.el-tabs-cards
+    .el-radio__label div { color: #7f858e; font-size: 13px; } #import-pascal-voc
+    .el-tabs.el-tabs-cards { border-radius: 4px; box-shadow: none; }
+    #import-pascal-voc .el-tabs.el-tabs-cards .el-tabs__header {
+    background-color: #f6fafd; } #import-pascal-voc .el-tabs.el-tabs-cards
+    .el-tabs__nav { float: none; display: flex; justify-content: space-between;
+    } #import-pascal-voc .el-tabs.el-tabs-cards .el-tabs__item { flex: 1;
+    margin-bottom: -3px; padding: 9px 16px 13px; height: auto; line-height:
+    normal; border-radius: 4px; }
+  </sly-style>
 
-        #import-pascal-voc .el-tabs.el-tabs-cards .el-radio {
-        display: flex;
-        align-items: start;
-        /*margin-bottom: 10px;*/
-        margin-left: 0;
-        white-space: normal;
-        }
+  <sly-card class="mt15">
+    <el-tabs class="el-tabs-cards" type="border-card" v-model="state.mode">
+      <el-tab-pane label="public" name="public">
+        <el-radio
+          v-model="state.mode"
+          slot="label"
+          label="public"
+          :disabled="data.started"
+        >
+          Sample Data
+          <div>Import prepared sample from the original KITTI dataset</div>
+        </el-radio>
+        <sly-field
+          title="Training Dataset"
+          description="Select a number of training scenes to import"
+          :disabled="data.started"
+        >
+          <div class="mt5">
+            <el-radio
+              v-model="state.training"
+              slot="label"
+              label="train_0"
+              :disabled="data.started"
+              >None
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.training"
+              slot="label"
+              label="train_100"
+              :disabled="data.started"
+              >100
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.training"
+              slot="label"
+              label="train_200"
+              :disabled="data.started"
+              >200
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.training"
+              slot="label"
+              label="train_300"
+              :disabled="data.started"
+              >300
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.training"
+              slot="label"
+              label="train_400"
+              :disabled="data.started"
+              >400
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.training"
+              slot="label"
+              label="train_500"
+              :disabled="data.started"
+              >500
+            </el-radio>
+          </div>
+        </sly-field>
+        <sly-field
+          title="Testing Dataset"
+          description="Select a number of testing scenes to import"
+        >
+          <div class="mt5">
+            <el-radio
+              v-model="state.testing"
+              slot="label"
+              label="test_0"
+              :disabled="data.started"
+              >None
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.testing"
+              slot="label"
+              label="test_100"
+              :disabled="data.started"
+              >100
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.testing"
+              slot="label"
+              label="test_200"
+              :disabled="data.started"
+              >200
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.testing"
+              slot="label"
+              label="test_300"
+              :disabled="data.started"
+              >300
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.testing"
+              slot="label"
+              label="test_400"
+              :disabled="data.started"
+              >400
+            </el-radio>
+          </div>
+          <div class="mt5">
+            <el-radio
+              v-model="state.testing"
+              slot="label"
+              label="test_500"
+              :disabled="data.started"
+              >500
+            </el-radio>
+          </div>
+        </sly-field>
+      </el-tab-pane>
+      <el-tab-pane label="custom" name="custom">
+        <el-radio
+          v-model="state.mode"
+          slot="label"
+          label="custom"
+          :disabled="data.started"
+        >
+          Custom Data
+          <div>Import your data in KITTI format</div>
+        </el-radio>
+        <sly-field
+          title="Path to Custom Data"
+          description="Copy path to your KITTI custom data from Team Files and paste it to input field."
+        >
+          <el-input
+            v-model="state.customDataPath"
+            :disabled="data.started"
+            placeholder="Path to custom data in Team Files"
+          ></el-input>
+        </sly-field>
+      </el-tab-pane>
+    </el-tabs>
+  </sly-card>
 
-        #import-pascal-voc .el-tabs.el-tabs-cards .el-radio__label div {
-        color: #7f858e;
-        font-size: 13px;
-        }
-
-        #import-pascal-voc .el-tabs.el-tabs-cards { border-radius: 4px; box-shadow: none; }
-        #import-pascal-voc .el-tabs.el-tabs-cards .el-tabs__header { background-color: #f6fafd; }
-        #import-pascal-voc .el-tabs.el-tabs-cards .el-tabs__nav { float: none; display: flex; justify-content:
-        space-between; }
-        #import-pascal-voc .el-tabs.el-tabs-cards .el-tabs__item { flex: 1; margin-bottom: -3px; padding: 9px 16px 13px;
-        height: auto; line-height: normal; border-radius: 4px; }
-    </sly-style>
-
-    <sly-card class="mt15">
-        <el-tabs class="el-tabs-cards" type="border-card" v-model="state.mode">
-            <el-tab-pane label="public" name="public">
-                <el-radio v-model="state.mode" slot="label" label="public" :disabled="data.started">
-                    Sample Data
-                    <div>Import prepared sample from the original KITTI dataset</div>
-                </el-radio>
-                <sly-field title="Training Dataset" description="Select a number of training scenes to import"
-                           :disabled="data.started">
-                    <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_0" :disabled="data.started">None
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_100" :disabled="data.started">100
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_200" :disabled="data.started">200
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_300" :disabled="data.started">300
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_400" :disabled="data.started">400
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.training" slot="label" label="train_500" :disabled="data.started">500
-                        </el-radio>
-                    </div>
-                </sly-field>
-                <sly-field title="Testing Dataset" description="Select a number of testing scenes to import">
-                    <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_0" :disabled="data.started">None
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_100" :disabled="data.started">100
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_200" :disabled="data.started">200
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_300" :disabled="data.started">300
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_400" :disabled="data.started">400
-                        </el-radio>
-                    </div>
-                    <div class="mt5">
-                        <el-radio v-model="state.testing" slot="label" label="test_500" :disabled="data.started">500
-                        </el-radio>
-                    </div>
-                </sly-field>
-
-            </el-tab-pane>
-            <el-tab-pane label="custom" name="custom">
-                <el-radio v-model="state.mode" slot="label" label="custom" :disabled="data.started">
-                    Custom Data
-                    <div>Import your data in KITTI format</div>
-                </el-radio>
-                <sly-field title="Path to Custom Data"
-                           description="Copy path to your KITTI custom data from Team Files and paste it to input field.">
-                    <el-input v-model="state.customDataPath" :disabled="data.started"
-                              placeholder="Path to custom data in Team Files"></el-input>
-                </sly-field>
-            </el-tab-pane>
-        </el-tabs>
+  <div class="mt10">
+    <sly-card
+      title="Output project"
+      v-if="state.training !== 'train_0' || state.testing !== 'test_0' || state.mode === 'custom'"
+    >
+      <sly-select-team-workspace
+        :team-id.sync="state.teamId"
+        :workspace-id.sync="state.workspaceId"
+        :disabled="data.started"
+      >
+      </sly-select-team-workspace>
+      <sly-field
+        title="Project name"
+        description="If project name already exists in selected workspace, a number will be added to the end of the name. e.g. my_project -> my_project_001"
+      >
+        <el-input
+          v-model="state.resultingProjectName"
+          :disabled="data.started"
+          placeholder="my_Project"
+        ></el-input>
+      </sly-field>
+      <sly-field
+        title="Train dataset name"
+        v-if="state.training !== 'train_0' && state.mode === 'public'"
+      >
+        <el-input
+          v-model="state.resultingTrainDatasetName"
+          :disabled="data.started"
+          placeholder="Training_Dataset"
+        ></el-input>
+      </sly-field>
+      <sly-field
+        title="Test dataset name"
+        v-if="state.testing !== 'test_0' && state.mode === 'public'"
+      >
+        <el-input
+          v-model="state.resultingTestDatasetName"
+          :disabled="data.started"
+          placeholder="Testing_Dataset"
+        ></el-input>
+      </sly-field>
+      <div class="fflex mt10">
+        <el-button
+          :disabled="!state.resultingProjectName || data.finished"
+          type="primary"
+          :loading="data.started"
+          @click="data.started = true; command('import_kitti')"
+        >
+          <i class="zmdi zmdi-play" style="margin-right: 5px"></i> Run
+        </el-button>
+        <div class="ml5" v-if="!state.resultingProjectName" style="color: red">
+          Enter name for resulting project
+        </div>
+      </div>
+      <div v-if="data.progressName" class="mt10">
+        <div
+          class="ml10"
+          v-if="data.started === true && state.resultingProjectName"
+        >
+          <div>
+            {{data.progressName}} {{data.currentProgressLabel}} /
+            {{data.totalProgressLabel}}
+          </div>
+          <el-progress
+            :percentage="Math.round(data.currentProgress * 100 / data.totalProgress)"
+          ></el-progress>
+        </div>
+        <sly-field
+          v-if="data.finished === true"
+          title=""
+          description="New project has been successfully created"
+        >
+          <a
+            slot="title"
+            target="_blank"
+            :href="`/projects/${data.resultProjectId}/datasets`"
+            >{{data.resultProject}}</a
+          >
+          <sly-icon
+            slot="icon"
+            :options="{ imageUrl: `${data.resultProjectPreviewUrl}` }"
+          />
+        </sly-field>
+      </div>
     </sly-card>
-
-    <div class="mt10">
-        <sly-card title="Output project"
-                  v-if="state.training !== 'train_0' || state.testing !== 'test_0' || state.mode === 'custom'">
-            <sly-select-team-workspace :team-id.sync="state.teamId"
-                                       :workspace-id.sync="state.workspaceId"
-                                       :disabled="data.started">
-            </sly-select-team-workspace>
-            <sly-field title="Project name"
-                       description="If project name already exists in selected workspace, a number will be added to the end of the name. e.g. my_project -> my_project_001">
-                <el-input v-model="state.resultingProjectName" :disabled="data.started"
-                          placeholder="my_Project"></el-input>
-            </sly-field>
-            <sly-field title="Train dataset name"
-                       v-if="state.training !== 'train_0' && state.mode === 'public'">
-                <el-input v-model="state.resultingTrainDatasetName"
-                          :disabled="data.started"
-                          placeholder="Training_Dataset"></el-input>
-            </sly-field>
-            <sly-field title="Test dataset name"
-                       v-if="state.testing !== 'test_0' && state.mode === 'public'">
-                <el-input v-model="state.resultingTestDatasetName"
-                          :disabled="data.started"
-                          placeholder="Testing_Dataset"></el-input>
-            </sly-field>
-            <div class="fflex mt10">
-                <el-button
-                        :disabled="!state.resultingProjectName || data.finished"
-                        type="primary"
-                        :loading="data.started"
-                        @click="data.started = true; command('import_kitti')"
-                >
-                    <i class="zmdi zmdi-play" style="margin-right: 5px"></i> Run
-                </el-button>
-                <div class="ml5" v-if="!state.resultingProjectName" style="color: red"> Enter name for resulting project
-                </div>
-            </div>
-            <div v-if="data.progressName" class="mt10">
-                <div class="ml10" v-if="data.started === true && state.resultingProjectName">
-                    <div>{{data.progressName}} {{data.currentProgressLabel}} / {{data.totalProgressLabel}}</div>
-                    <el-progress
-                            :percentage="Math.round(data.currentProgress * 100 / data.totalProgress)"></el-progress>
-                </div>
-                <sly-field v-if="data.finished === true" title=""
-                           description="New project has been successfully created">
-                    <a slot="title" target="_blank" :href="`/projects/${data.resultProjectId}/datasets`">{{data.resultProject}}</a>
-                    <sly-icon slot="icon" :options="{ imageUrl: `${data.resultProjectPreviewUrl}` }"/>
-                </sly-field>
-            </div>
-        </sly-card>
-    </div>
+  </div>
 </div>
