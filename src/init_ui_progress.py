@@ -1,5 +1,6 @@
-import supervisely as sly
 from functools import partial
+
+import supervisely as sly
 
 
 def init_progress(data, state):
@@ -26,7 +27,15 @@ def _set_progress(api, task_id, message, current_label, total_label, current, to
 
 
 def _update_progress_ui(api, task_id, progress: sly.Progress):
-    _set_progress(api, task_id, progress.message, progress.current_label, progress.total_label, progress.current, progress.total)
+    _set_progress(
+        api,
+        task_id,
+        progress.message,
+        progress.current_label,
+        progress.total_label,
+        progress.current,
+        progress.total,
+    )
 
 
 def update_progress(count, api: sly.Api, task_id, progress: sly.Progress):

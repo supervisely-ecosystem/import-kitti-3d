@@ -1,41 +1,70 @@
-import os
 import glob
+import os
 import shutil
+
 import numpy as np
-import globals as g
 import open3d as o3d
-import init_ui_progress
 import supervisely as sly
 from supervisely.geometry.cuboid_3d import Cuboid3d, Vector3d
+from supervisely.io.fs import file_exists
 from supervisely.pointcloud_annotation.pointcloud_object_collection import (
     PointcloudObjectCollection,
 )
 from supervisely.project.pointcloud_project import OpenMode
+
+import globals as g
+import init_ui_progress
 
 
 def get_kitti_files_list(kitti_dataset_path):
     binfiles_glob = os.path.join(kitti_dataset_path, "velodyne/*.bin")
     bin_paths = sorted(glob.glob(binfiles_glob))
     if len(bin_paths) < 1:
-        sly.logger.error(f"No pointclouds found! Check path: {binfiles_glob}")
+        raise Exception(
+            f"Failed to find any pointclouds in the directory: {kitti_dataset_path}"
+        )
 
-    image_paths = [
-        x.replace("velodyne", "image_2").replace(".bin", ".png") for x in bin_paths
-    ]
-    calib_paths = [
-        x.replace("velodyne", "calib").replace(".bin", ".txt") for x in bin_paths
-    ]
+    filtered_bin_paths = []
+    image_paths, missing_image_paths = [], []
+    calib_paths, missing_calib_paths = [], []
+    label_paths = []
+    for bin_path in bin_paths:
+        image_path = bin_path.replace("velodyne", "image_2").replace(".bin", ".png")
+        calib_path = bin_path.replace("velodyne", "calib").replace(".bin", ".txt")
+        if file_exists(image_path) and file_exists(calib_path):
+            filtered_bin_paths.append(bin_path)
+            image_paths.append(image_path)
+            calib_paths.append(calib_path)
+            if os.path.exists(os.path.join(kitti_dataset_path, "label_2")):
+                label_path = bin_path.replace("velodyne", "label_2").replace(
+                    ".bin", ".txt"
+                )
+                if file_exists(label_path):
+                    label_paths.append(label_path)
+                else:
+                    label_paths.append(None)
+            else:
+                label_paths.append(None)
+        else:
+            sly.logger.warn(f"Skipping pointcloud: {sly.fs.get_file_name_with_ext(bin_path)}.")
 
-    if os.path.exists(os.path.join(kitti_dataset_path, "label_2")):
-        label_paths = [
-            x.replace("velodyne", "label_2").replace(".bin", ".txt") for x in bin_paths
-        ]
-    else:
-        label_paths = []
-        for x in bin_paths:
-            label_paths.append(None)
+            if not file_exists(image_path):
+                missing_image_paths.append(image_path)
 
-    return bin_paths, label_paths, image_paths, calib_paths
+            if not file_exists(calib_path):
+                missing_calib_paths.append(calib_path)
+
+    if len(missing_image_paths) > 0 or len(missing_calib_paths) > 0:
+        image_names = [sly.fs.get_file_name_with_ext(x) for x in missing_image_paths]
+        calib_names = [sly.fs.get_file_name_with_ext(x) for x in missing_calib_paths]
+        err_msg = (
+            "Some files are missing:\n"
+            f"  - {len(missing_image_paths)} photo context - {image_names},\n"
+            f"  - {len(missing_calib_paths)} calibration files - {calib_names}"
+        )
+        sly.logger.warn(err_msg)
+
+    return filtered_bin_paths, label_paths, image_paths, calib_paths
 
 
 def read_kitti_annotations(label_paths, calib_paths, ds_name):
@@ -44,6 +73,10 @@ def read_kitti_annotations(label_paths, calib_paths, ds_name):
     for label_file, calib_file in zip(label_paths, calib_paths):
         calib = o3d.ml.datasets.KITTI.read_calib(calib_file)
         if ds_name == "training":
+            if label_file is None:
+                raise Exception(
+                    f"One of the pointclouds in the training dataset does not have a corresponding label file"
+                )
             labels = o3d.ml.datasets.KITTI.read_label(label_file, calib)
             all_labels.append(labels)
         all_calib.append(calib)
@@ -152,13 +185,31 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
     sly.fs.remove_junk_from_dir(kitti_base_dir)
     sly.logger.debug(f"Removed junk files from {kitti_base_dir}...")
 
-    for kitti_dataset_path in os.listdir(kitti_base_dir):
-        kitti_dataset_name = kitti_dataset_path
-        kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_path)
+    def _check_function(path):
+        if not os.path.isdir(path):
+            return False
+        if len(os.listdir(path)) == 0:
+            return False
+        if all([x in ["training", "testing"] for x in os.listdir(path)]):
+            return True
+        return False
+
+    base_dir = [x for x in sly.fs.dirs_filter(kitti_base_dir, _check_function)]
+
+    if len(base_dir) == 0:
+        raise Exception(f"KITTI 3D datasets not found in the dataset {kitti_base_dir}")
+    kitti_base_dir = base_dir[0]
+    for kitti_dataset_name in os.listdir(kitti_base_dir):
+        kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_name)
 
         bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(
             kitti_dataset_path
         )
+        if len(bin_paths) == 0:
+            sly.logger.warn(
+                f"Skipping KITTI dataset: {kitti_dataset_name}. Not found correct data."
+            )
+            continue
         kitti_labels, kitti_calibs = read_kitti_annotations(
             label_paths, calib_paths, kitti_dataset_name
         )

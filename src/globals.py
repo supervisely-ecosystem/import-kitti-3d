@@ -1,14 +1,20 @@
 import os
+
 import supervisely as sly
+from dotenv import load_dotenv
 from supervisely.app.v1.app_service import AppService
 
+if sly.is_development():
+    load_dotenv("local.env")
+    load_dotenv(os.path.expanduser("~/supervisely.env"))
 
-my_app: AppService = AppService(ignore_task_id=True)
-api: sly.Api = my_app.public_api
+
+my_app = AppService(ignore_task_id=True)
+api = my_app.public_api
 
 task_id = my_app.task_id
-team_id = int(os.environ['context.teamId'])
-workspace_id = int(os.environ['context.workspaceId'])
+team_id = sly.env.team_id()
+workspace_id = sly.env.workspace_id()
 
 
 storage_dir = os.path.join(my_app.data_dir, "kitti_importer")

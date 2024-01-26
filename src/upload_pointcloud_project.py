@@ -1,34 +1,48 @@
-import globals as g
 import supervisely as sly
-from supervisely.io.json import load_json_file
 from supervisely.api.module_api import ApiField
 from supervisely.video_annotation.key_id_map import KeyIdMap
 
+import globals as g
 import init_ui_progress
 
+
 def upload_sly_pcd(project_dir, workspace_id, project_name):
-    project = g.api.project.create(workspace_id,
-                                 project_name,
-                                 type=sly.ProjectType.POINT_CLOUDS,
-                                 change_name_if_conflict=True)
+    project = g.api.project.create(
+        workspace_id,
+        project_name,
+        type=sly.ProjectType.POINT_CLOUDS,
+        change_name_if_conflict=True,
+    )
 
     project_fs = sly.PointcloudProject.read_single(project_dir)
 
     g.api.project.update_meta(project.id, project_fs.meta.to_json())
-    sly.logger.info("Project {!r} [id={!r}] has been created".format(project.name, project.id))
+    sly.logger.info(
+        "Project {!r} [id={!r}] has been created".format(project.name, project.id)
+    )
 
     uploaded_objects = KeyIdMap()
 
     for dataset_fs in project_fs:
-        dataset = g.api.dataset.create(project.id, dataset_fs.name, change_name_if_conflict=True)
-        sly.logger.info("dataset {!r} [id={!r}] has been created".format(dataset.name, dataset.id))
+        dataset = g.api.dataset.create(
+            project.id, dataset_fs.name, change_name_if_conflict=True
+        )
+        sly.logger.info(
+            "dataset {!r} [id={!r}] has been created".format(dataset.name, dataset.id)
+        )
 
-        progress_items_cb = init_ui_progress.get_progress_cb(g.api, g.task_id, f'Uploading dataset: {dataset.name}', len(dataset_fs))
+        progress_items_cb = init_ui_progress.get_progress_cb(
+            g.api, g.task_id, f"Uploading dataset: {dataset.name}", len(dataset_fs)
+        )
         for item_name in dataset_fs:
-            item_path, related_images_dir, ann_path = dataset_fs.get_item_paths(item_name)
+            item_path, related_images_dir, ann_path = dataset_fs.get_item_paths(
+                item_name
+            )
 
             item_meta = {}
-            pointcloud = g.api.pointcloud.upload_path(dataset.id, item_name, item_path, item_meta)
+            pointcloud = g.api.pointcloud.upload_path(
+                dataset.id, item_name, item_path, item_meta
+            )
 
             # validate_item_annotation
             ann_json = sly.io.json.load_json_file(ann_path)
@@ -46,10 +60,14 @@ def upload_sly_pcd(project_dir, workspace_id, project_name):
                     img = g.api.pointcloud.upload_related_image(img_path)
                     if isinstance(img, list):
                         img = img[0]
-                    rimg_infos.append({ApiField.ENTITY_ID: pointcloud.id,
-                                       ApiField.NAME: meta_json[ApiField.NAME],
-                                       ApiField.HASH: img,
-                                       ApiField.META: meta_json[ApiField.META]})
+                    rimg_infos.append(
+                        {
+                            ApiField.ENTITY_ID: pointcloud.id,
+                            ApiField.NAME: meta_json[ApiField.NAME],
+                            ApiField.HASH: img,
+                            ApiField.META: meta_json[ApiField.META],
+                        }
+                    )
 
                 g.api.pointcloud.add_related_images(rimg_infos)
             progress_items_cb(1)
@@ -59,8 +77,13 @@ def upload_sly_pcd(project_dir, workspace_id, project_name):
         {"field": "data.finished", "payload": True},
         {"field": "data.resultProject", "payload": project.name},
         {"field": "data.resultProjectId", "payload": project.id},
-        {"field": "data.resultProjectPreviewUrl", "payload": g.api.image.preview_url("https://i.imgur.com/qmuNM6J.png", 100, 100)}
+        {
+            "field": "data.resultProjectPreviewUrl",
+            "payload": g.api.image.preview_url(
+                "https://i.imgur.com/qmuNM6J.png", 100, 100
+            ),
+        },
     ]
     g.api.task.set_fields(g.task_id, fields)
-    g.my_app.show_modal_window(f"'{project.name}' project has been successfully imported.")
+    g.api.task.set_output_project(g.task_id, project.id, project.name)
     g.my_app.stop()
