@@ -20,48 +20,59 @@ def get_kitti_files_list(kitti_dataset_path):
     binfiles_glob = os.path.join(kitti_dataset_path, "velodyne/*.bin")
     bin_paths = sorted(glob.glob(binfiles_glob))
     if len(bin_paths) < 1:
-        sly.logger.error(f"No pointclouds found! Check path: {binfiles_glob}")
+        raise Exception(
+            f"Failed to find any pointclouds in the directory: {kitti_dataset_path}"
+        )
 
+    filtered_bin_paths = []
     image_paths, missing_image_paths = [], []
     calib_paths, missing_calib_paths = [], []
     label_paths = []
     for bin_path in bin_paths:
         image_path = bin_path.replace("velodyne", "image_2").replace(".bin", ".png")
-        if file_exists(image_path):
-            image_paths.append(image_path)
-        else:
-            missing_image_paths.append(image_path)
-
         calib_path = bin_path.replace("velodyne", "calib").replace(".bin", ".txt")
-        if file_exists(calib_path):
+        if file_exists(image_path) and file_exists(calib_path):
+            filtered_bin_paths.append(bin_path)
+            image_paths.append(image_path)
             calib_paths.append(calib_path)
-        else:
-            missing_calib_paths.append(calib_path)
-        if os.path.exists(os.path.join(kitti_dataset_path, "label_2")):
-            label_path = bin_path.replace("velodyne", "label_2").replace(".bin", ".txt")
-            if file_exists(label_path):
-                label_paths.append(label_path)
+            if os.path.exists(os.path.join(kitti_dataset_path, "label_2")):
+                label_path = bin_path.replace("velodyne", "label_2").replace(
+                    ".bin", ".txt"
+                )
+                if file_exists(label_path):
+                    label_paths.append(label_path)
+                else:
+                    label_paths.append(None)
             else:
                 label_paths.append(None)
         else:
-            label_paths.append(None)
+            sly.logger.warn(
+                f"Skipping pointcloud: {bin_path}. Photo context or calib file is missing"
+            )
 
-    missing_files = False
-    err_msg = "Missing files:\n"
-    if len(missing_image_paths) > 0:
-        missing_files = True
+            if not file_exists(image_path):
+                missing_image_paths.append(image_path)
+
+            if not file_exists(calib_path):
+                missing_calib_paths.append(calib_path)
+
+    if len(missing_image_paths) > 0 or len(missing_calib_paths) > 0:
         image_names = [sly.fs.get_file_name(x) for x in missing_image_paths]
-        err_msg += f"{len(missing_image_paths)} images - {image_names}\n"
-    
-    if len(missing_calib_paths) > 0:
-        missing_files = True
         calib_names = [sly.fs.get_file_name(x) for x in missing_calib_paths]
-        err_msg += f"{len(missing_calib_paths)} calibs - {calib_names}\n"
+        err_msg = (
+            "Some files are missing: "
+            f"  - {len(missing_image_paths)} photo context - {image_names}, "
+            f"  - {len(missing_calib_paths)} calib files - {calib_names}"
+        )
+        sly.logger.warn(err_msg)
 
-    if missing_files:
-        raise Exception(err_msg)
+    if len(filtered_bin_paths) == 0:
+        raise Exception(
+            "Failed to find any pointcloud with corresponding photo context and calib file"
+            f"in the directory: {kitti_dataset_path}"
+        )
 
-    return bin_paths, label_paths, image_paths, calib_paths
+    return filtered_bin_paths, label_paths, image_paths, calib_paths
 
 
 def read_kitti_annotations(label_paths, calib_paths, ds_name):
