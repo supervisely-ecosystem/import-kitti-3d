@@ -3,7 +3,7 @@ import os
 import shutil
 
 import numpy as np
-# import open3d as o3d
+import open3d as o3d
 import supervisely as sly
 from supervisely.geometry.cuboid_3d import Cuboid3d, Vector3d
 from supervisely.io.fs import file_exists
@@ -103,13 +103,13 @@ def convert_bin_to_pcd(bin_file, save_filepath):
             "Please ensure that the binary file contains a multiple of 4 elements to be "
             "successfully reshaped into a (N, 4) array.\n"
         )
-    # points = bin[:, 0:3]
-    # intensity = bin[:, -1]
-    # intensity_fake_rgb = np.zeros((intensity.shape[0], 3))
-    # intensity_fake_rgb[:, 0] = intensity
-    # pc = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
-    # pc.colors = o3d.utility.Vector3dVector(intensity_fake_rgb)
-    # o3d.io.write_point_cloud(save_filepath, pc)
+    points = bin[:, 0:3]
+    intensity = bin[:, -1]
+    intensity_fake_rgb = np.zeros((intensity.shape[0], 3))
+    intensity_fake_rgb[:, 0] = intensity
+    pc = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+    pc.colors = o3d.utility.Vector3dVector(intensity_fake_rgb)
+    o3d.io.write_point_cloud(save_filepath, pc)
 
 
 def flatten(list_2d):
