@@ -161,7 +161,7 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
             return True
         return False
 
-    datasets = sly.fs.dirs_filter(kitti_base_dir, check_function=_check_function)
+    datasets = [x for x in sly.fs.dirs_filter(kitti_base_dir, _check_function)]
 
     if len(datasets) == 0:
         raise Exception(
