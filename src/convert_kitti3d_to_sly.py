@@ -1,11 +1,13 @@
 import glob
 import os
 import shutil
+from collections import defaultdict
 
 import numpy as np
 import open3d as o3d
 import supervisely as sly
 from supervisely.geometry.cuboid_3d import Cuboid3d, Vector3d
+from supervisely.geometry.pointcloud import Pointcloud
 from supervisely.io.fs import file_exists
 from supervisely.pointcloud_annotation.pointcloud_object_collection import (
     PointcloudObjectCollection,
@@ -15,19 +17,19 @@ from supervisely.project.pointcloud_project import OpenMode
 import globals as g
 import init_ui_progress
 
+cls_map_inv = defaultdict(str)
 
 def get_kitti_files_list(kitti_dataset_path):
     binfiles_glob = os.path.join(kitti_dataset_path, "velodyne/*.bin")
     bin_paths = sorted(glob.glob(binfiles_glob))
     if len(bin_paths) < 1:
-        raise Exception(
-            f"Failed to find any pointclouds in the directory: {kitti_dataset_path}"
-        )
+        raise Exception(f"Failed to find any pointclouds in the directory: {kitti_dataset_path}")
 
     filtered_bin_paths = []
     image_paths, missing_image_paths = [], []
     calib_paths, missing_calib_paths = [], []
-    label_paths = []
+    bbox_label_paths = []
+    points_label_paths = []
     for bin_path in bin_paths:
         image_path = bin_path.replace("velodyne", "image_2").replace(".bin", ".png")
         calib_path = bin_path.replace("velodyne", "calib").replace(".bin", ".txt")
@@ -35,16 +37,20 @@ def get_kitti_files_list(kitti_dataset_path):
             filtered_bin_paths.append(bin_path)
             image_paths.append(image_path)
             calib_paths.append(calib_path)
-            if os.path.exists(os.path.join(kitti_dataset_path, "label_2")):
-                label_path = bin_path.replace("velodyne", "label_2").replace(
-                    ".bin", ".txt"
-                )
-                if file_exists(label_path):
-                    label_paths.append(label_path)
-                else:
-                    label_paths.append(None)
-            else:
-                label_paths.append(None)
+
+            bbox_label_path = bin_path.replace("velodyne", "label_2").replace(".bin", ".txt")
+            label_dir = os.path.dirname(bbox_label_path)
+            if not os.path.exists(label_dir):
+                bbox_label_path = None
+            elif not os.path.exists(bbox_label_path):
+                bbox_label_path = None
+            bbox_label_paths.append(bbox_label_path)
+
+            points_label_path = bbox_label_path.replace(".txt", ".label")
+            if not os.path.exists(points_label_path):
+                points_label_path = None
+            points_label_paths.append(points_label_path)
+
         else:
             sly.logger.warn(f"Skipping pointcloud: {sly.fs.get_file_name_with_ext(bin_path)}.")
 
@@ -64,32 +70,54 @@ def get_kitti_files_list(kitti_dataset_path):
         )
         sly.logger.warn(err_msg)
 
-    return filtered_bin_paths, label_paths, image_paths, calib_paths
+    return filtered_bin_paths, bbox_label_paths, image_paths, calib_paths, points_label_paths
 
 
-def read_kitti_annotations(label_paths, calib_paths, ds_name):
-    all_labels = []
+def read_kitti_annotations(bbox_label_paths, calib_paths, ds_name, points_label_paths):
+    bbox_labels = []
     all_calib = []
-    for label_file, calib_file in zip(label_paths, calib_paths):
+    points_labels = []
+    for bbox, calib_file, pcd_label in zip(bbox_label_paths, calib_paths, points_label_paths):
         calib = o3d.ml.datasets.KITTI.read_calib(calib_file)
         if ds_name == "training":
-            if label_file is None:
+            if bbox is None:
                 raise Exception(
                     f"One of the pointclouds in the training dataset does not have a corresponding label file"
                 )
-            labels = o3d.ml.datasets.KITTI.read_label(label_file, calib)
-            all_labels.append(labels)
+            labels = o3d.ml.datasets.KITTI.read_label(bbox, calib)
+            bbox_labels.append(labels)
+            if pcd_label is not None:
+                labels = np.fromfile(pcd_label, dtype=np.uint32)
+                points_labels.append(labels)
+            else:
+                points_labels.append(None)
         all_calib.append(calib)
         if ds_name == "testing":
-            all_labels.append(None)
-    return all_labels, all_calib
+            bbox_labels.append(None)
+            points_labels.append(None)
+    return bbox_labels, all_calib, points_labels
 
 
-def convert_labels_to_meta(labels, geometry=Cuboid3d):
+def convert_labels_to_meta(labels, points_labels):
     labels = flatten(labels)
     unique_labels = np.unique([l.label_class for l in labels])
-    obj_classes = [sly.ObjClass(k, geometry) for k in unique_labels]
+    obj_classes = [sly.ObjClass(k, Cuboid3d) for k in unique_labels]
     meta = sly.ProjectMeta(obj_classes=sly.ObjClassCollection(obj_classes))
+
+    global cls_map_inv
+    for lbl in points_labels:
+        if lbl is not None:
+            sem_label = np.array([l & 0xFFFF for l in lbl], dtype=np.uint16).astype(np.uint8)
+
+            unique_labels = np.unique(sem_label)
+            for p in unique_labels:
+                if p == 0:
+                    continue
+                cls_map_inv[p] = f"Object_{len(cls_map_inv)}"
+
+    obj_classes = [sly.ObjClass(k, Pointcloud) for k in cls_map_inv.values()]
+    meta = meta.add_obj_classes(obj_classes)
+
     return meta
 
 
@@ -132,7 +160,7 @@ def _convert_label_to_geometry(label):
     return geometries
 
 
-def convert_label_to_annotation(label, meta):
+def convert_bbox_label_to_annotation(label, meta):
     geometries = _convert_label_to_geometry(label)
     figures = []
     objs = []
@@ -141,8 +169,27 @@ def convert_label_to_annotation(label, meta):
         figures.append(sly.PointcloudFigure(pcobj, geometry))
         objs.append(pcobj)
 
-    annotation = sly.PointcloudAnnotation(PointcloudObjectCollection(objs), figures)
-    return annotation
+    return objs, figures
+
+
+def convert_points_label_to_annotation(label, meta):
+    sem_label = np.array([l & 0xFFFF for l in label], dtype=np.uint16).astype(np.uint8)
+    inst_label = np.array([l >> 16 for l in label], dtype=np.uint16).astype(np.uint8)
+
+    figures = []
+    objs = []
+    unique_figures = np.unique(inst_label)
+    for i in unique_figures:
+        if i == 0:
+            continue
+        curr_inst = np.where(inst_label == i)[0]
+        segm_cls_id = sem_label[curr_inst[0]]
+        cls_name = cls_map_inv.get(segm_cls_id)
+        pcobj = sly.PointcloudObject(meta.get_obj_class(cls_name))
+        figures.append(sly.PointcloudFigure(pcobj, Pointcloud(curr_inst.tolist())))
+        objs.append(pcobj)
+
+    return objs, figures
 
 
 def convert_calib_to_image_meta(image_name, calib_path, camera_num=2):
@@ -151,9 +198,7 @@ def convert_calib_to_image_meta(image_name, calib_path, camera_num=2):
 
     assert 0 < camera_num < 4
     intrinsic_matrix = lines[camera_num].strip().split(" ")[1:]
-    intrinsic_matrix = np.array(intrinsic_matrix, dtype=np.float32).reshape(3, 4)[
-        :3, :3
-    ]
+    intrinsic_matrix = np.array(intrinsic_matrix, dtype=np.float32).reshape(3, 4)[:3, :3]
 
     obj = lines[4].strip().split(" ")[1:]
     rect_4x4 = np.eye(4, dtype=np.float32)
@@ -202,16 +247,16 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
     for kitti_dataset_name in os.listdir(kitti_base_dir):
         kitti_dataset_path = os.path.join(kitti_base_dir, kitti_dataset_name)
 
-        bin_paths, label_paths, image_paths, calib_paths = get_kitti_files_list(
-            kitti_dataset_path
+        bin_paths, bbox_label_paths, image_paths, calib_paths, points_label_paths = (
+            get_kitti_files_list(kitti_dataset_path)
         )
         if len(bin_paths) == 0:
             sly.logger.warn(
                 f"Skipping KITTI dataset: {kitti_dataset_name}. Not found correct data."
             )
             continue
-        kitti_labels, kitti_calibs = read_kitti_annotations(
-            label_paths, calib_paths, kitti_dataset_name
+        kitti_labels, _, points_labels = read_kitti_annotations(
+            bbox_label_paths, calib_paths, kitti_dataset_name, points_label_paths
         )
 
         sly.logger.info(f"Loading KITTI dataset with {len(bin_paths)} pointclouds")
@@ -228,7 +273,7 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
             f"Created Supervisely dataset with {dataset_fs.name} at {dataset_fs.directory}"
         )
         if kitti_dataset_name == "training":
-            meta = convert_labels_to_meta(kitti_labels)
+            meta = convert_labels_to_meta(kitti_labels, points_labels)
             project_fs.set_meta(meta)
 
         progress_items_cb = init_ui_progress.get_progress_cb(
@@ -238,18 +283,23 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
             len(bin_paths),
         )
 
-        for bin_path, kitti_label, image_path, calib_path in zip(
-            bin_paths, kitti_labels, image_paths, calib_paths
+        for bin_path, kitti_label, image_path, calib_path, points_label in zip(
+            bin_paths, kitti_labels, image_paths, calib_paths, points_labels
         ):
             item_name = sly.fs.get_file_name(bin_path) + ".pcd"
             item_path = dataset_fs.generate_item_path(item_name)
 
-            convert_bin_to_pcd(
-                bin_path, item_path
-            )  # automatically save pointcloud to itempath
+            convert_bin_to_pcd(bin_path, item_path)  # automatically save pointcloud to itempath
 
             if kitti_dataset_name == "training":
-                ann = convert_label_to_annotation(kitti_label, meta)
+                objs, figures = convert_bbox_label_to_annotation(kitti_label, meta)
+                if points_label is not None:
+                    extra_objs, extra_figures = convert_points_label_to_annotation(
+                        points_label, meta
+                    )
+                    objs.extend(extra_objs)
+                    figures.extend(extra_figures)
+                ann = sly.PointcloudAnnotation(PointcloudObjectCollection(objs), figures)
                 dataset_fs.add_item_file(item_name, item_path, ann)
             else:
                 dataset_fs.add_item_file(item_name, item_path)
@@ -265,6 +315,4 @@ def start(kitti_base_dir, sly_project_path, train_ds_name, test_ds_name):
             # sly.logger.info(f".bin -> {item_name}")
             progress_items_cb(1)
 
-        sly.logger.info(
-            f"Job done, dataset converted. Project_path: {sly_project_path}"
-        )
+        sly.logger.info(f"Job done, dataset converted. Project_path: {sly_project_path}")
