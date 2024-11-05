@@ -11,16 +11,16 @@
   <a href="#Demo">Demo</a>
 </p>
   
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/import-kitti-3d)
-[![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/import-kitti-3d)
+[![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/import-kitti-3d)
-[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/import-kitti-3d.png)](https://supervise.ly)
-[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/import-kitti-3d.png)](https://supervise.ly)
+[![views](https://app.supervisely.com/img/badges/views/supervisely-ecosystem/import-kitti-3d.png)](https://supervisely.com)
+[![runs](https://app.supervisely.com/img/badges/runs/supervisely-ecosystem/import-kitti-3d.png)](https://supervisely.com)
 
 </div>
 
 ## Overview
-Converts [KITTI 3D](http://www.cvlibs.net/datasets/kitti/) format to [Supervisely](https://docs.supervise.ly/data-organization/00_ann_format_navi) and creates a new project in selected `Team` -> `Workspace`. Backward compatible with [`Export to KITTI 3D`](https://github.com/supervisely-ecosystem/export-to-kitti-3d) app.
+Converts [KITTI 3D](http://www.cvlibs.net/datasets/kitti/) format to [Supervisely](https://docs.supervisely.com/data-organization/00_ann_format_navi) and creates a new project in selected `Team` -> `Workspace`. Backward compatible with [`Export to KITTI 3D`](https://github.com/supervisely-ecosystem/export-to-kitti-3d) app.
 
 App can import [sample data](https://github.com/supervisely-ecosystem/import-kitti-3d-sample-files/releases) from original KITTI dataset with user selected amount of scenes for training and testing data: `100`, `200`, `300`, `400` or `500` scenes. User also can import an archive with KITTI data from `Team Files`. If you want to import full KITTI dataset, you must download it manually from [KITTI website](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) and upload it to `Team Files`. **App supports only left color images**.
 
@@ -92,7 +92,7 @@ KITTI_DATA.tar(tar.gz/zip)
 
 
 ## How To Run 
-**Step 1**: Add app to your team from [Ecosystem](https://ecosystem.supervise.ly/apps/import-kitti-3d) if it is not there.
+**Step 1**: Add app to your team from [Ecosystem](https://ecosystem.supervisely.com/apps/import-kitti-3d) if it is not there.
 
 **Step 2**: Run app from `Team` -> `Plugins & Apps` page. After running the app you will be redirected to the `Tasks` page.
 
