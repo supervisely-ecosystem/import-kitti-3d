@@ -11,7 +11,7 @@
   <a href="#Demo">Demo</a>
 </p>
   
-[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervisely.com/apps/supervisely-ecosystem/import-kitti-3d)
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](../../../../supervisely-ecosystem/import-kitti-3d)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervisely.com/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/import-kitti-3d)
 [![views](https://app.supervisely.com/img/badges/views/supervisely-ecosystem/import-kitti-3d.png)](https://supervisely.com)
@@ -92,7 +92,7 @@ KITTI_DATA.tar(tar.gz/zip)
 
 
 ## How To Run 
-**Step 1**: Add app to your team from [Ecosystem](https://ecosystem.supervisely.com/apps/import-kitti-3d) if it is not there.
+**Step 1**: Add app to your team from [Ecosystem](../../../../supervisely-ecosystem/import-kitti-3d) if it is not there.
 
 **Step 2**: Run app from `Team` -> `Plugins & Apps` page. After running the app you will be redirected to the `Tasks` page.
 
