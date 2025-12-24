@@ -46,9 +46,12 @@ def get_kitti_files_list(kitti_dataset_path):
                 bbox_label_path = None
             bbox_label_paths.append(bbox_label_path)
 
-            points_label_path = bbox_label_path.replace(".txt", ".label")
-            if not os.path.exists(points_label_path):
+            if bbox_label_path is None:
                 points_label_path = None
+            else:
+                points_label_path = bbox_label_path.replace(".txt", ".label")
+                if not os.path.exists(points_label_path):
+                    points_label_path = None
             points_label_paths.append(points_label_path)
 
         else:
